@@ -21,6 +21,11 @@ const routes = [
     component: () => import('../views/Help.vue')
   },
   {
+    path: '/user',
+    name: 'User',
+    component: () => import('../views/User.vue')
+  },
+  {
     path: '*',
     name: 'e404',
     component: () => import('../views/e404.vue')

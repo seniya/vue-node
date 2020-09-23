@@ -69,6 +69,13 @@ export default {
         to: {
           path: '/help'
         }
+      },
+      {
+        icon: 'mdi-account',
+        title: 'user',
+        to: {
+          path: '/user'
+        }
       }
     ]
   })
