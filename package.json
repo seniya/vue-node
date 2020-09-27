@@ -5,8 +5,8 @@
   "scripts": {
     "dev": "cross-env-shell DEBUG=be:* NODE_ENV=development node ./be/bin/www",
     "serve": "cd fe && npm run serve",
-    "pr": "cd fe && npm && npm run build && cd ../be && npm && cd .. && NODE_ENV=production PORT=3000 node ./be/bin/www",
-    "pm2": "cd fe && npm && npm run build && cd ../be && npm && cd .. && pm2 start --env pr"
+    "pr": "cd fe && npm i && npm run build && cd ../be && npm i && cd .. && NODE_ENV=production PORT=3000 node ./be/bin/www",
+    "pm2": "cd fe && npm i && npm run build && cd ../be && npm i && cd .. && pm2 start --env pr"
   },
   "dependencies": {},
   "devDependencies": {
