@@ -10,9 +10,12 @@ router.all('*', function (req, res, next) {
 router.use('/user', require('./user'))
 router.use('/page', require('./page'))
 router.use('/site', require('./site'))
+router.use('/board', require('./board'))
 
 router.all('*', function (req, res, next) {
-  next(createError(404, '그런 api 없어'));
-});
+  // if (req.user.lv) return res.send({ success: false, msg: '권한이 없습니다.' })
+  if (req.user.lv) throw createError(403, '권한이 없습니다.')
+  next()
+})
 
 module.exports = router;

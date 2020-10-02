@@ -19,8 +19,26 @@ axios.interceptors.request.use(function (config) {
 })
 
 axios.interceptors.response.use(function (response) {
+  const token = response.data.token
+  if (token) localStorage.setItem('token', token)
   return response
 }, function (error) {
+  console.log(error.response)
+  switch (error.response.status) {
+    case 400:
+      this.$store.commit('pop', { msg: `잘못된 요청입니다(${error.response.status}:${error.message})`, color: 'error' })
+      break
+    case 401:
+      this.$store.commit('delToken')
+      this.$store.commit('pop', { msg: `인증 오류입니다(${error.response.status}:${error.message})`, color: 'error' })
+      break
+    case 403:
+      this.$store.commit('pop', { msg: `이용 권한이 없습니다(${error.response.status}:${error.message})`, color: 'warning' })
+      break
+    default:
+      this.$store.commit('pop', { msg: `알수 없는 오류입니다(${error.response.status}:${error.message})`, color: 'error' })
+      break
+  }
   return Promise.reject(error)
 })
 
@@ -32,72 +50,91 @@ const pageCheck = (to, from, next) => {
       next()
     })
     .catch((e) => {
-      // console.error(e.message)
-      next(`/block/${e.message}`)
+      // next(`/block/${e.message.replace(/\//gi, ' ')}`)
+      if (!e.response) this.$store.commit('pop', { msg: e.message, color: 'warning' })
+      next(false)
     })
 }
 
 const routes = [
   {
     path: '/',
-    name: 'lv0',
-    component: () => import('../views/lv0.vue'),
+    name: 'dashboard',
+    component: () => import('../views/dashboard.vue'),
     beforeEnter: pageCheck
   },
   {
-    path: '/lv1',
-    name: 'lv1',
-    component: () => import('../views/lv1.vue'),
+    path: '/board/:name',
+    name: 'board',
+    component: () => import('../views/board/index.vue'),
     beforeEnter: pageCheck
   },
   {
-    path: '/lv2',
-    name: 'lv2',
-    component: () => import('../views/lv2.vue'),
+    path: '/test/lv3',
+    name: 'testLv3',
+    component: () => import('../views/test/lv3.vue'),
     beforeEnter: pageCheck
   },
   {
-    path: '/lv3',
-    name: 'lv3',
-    component: () => import('../views/lv3.vue'),
+    path: '/test/lv2',
+    name: 'testLv2',
+    component: () => import('../views/test/lv2.vue'),
     beforeEnter: pageCheck
   },
   {
-    path: '/user',
-    name: 'user',
-    component: () => import('../views/user.vue'),
+    path: '/test/lv1',
+    name: 'testLv1',
+    component: () => import('../views/test/lv1.vue'),
     beforeEnter: pageCheck
   },
   {
-    path: '/page',
-    name: 'page',
-    component: () => import('../views/page.vue'),
+    path: '/test/lv0',
+    name: 'testLv0',
+    component: () => import('../views/test/lv0.vue'),
+    beforeEnter: pageCheck
+  },
+  {
+    path: '/manage/users',
+    name: 'manageUsers',
+    component: () => import('../views/manage/users.vue'),
+    beforeEnter: pageCheck
+  },
+  {
+    path: '/manage/pages',
+    name: 'managePages',
+    component: () => import('../views/manage/pages.vue'),
+    beforeEnter: pageCheck
+  },
+  {
+    path: '/manage/sites',
+    name: 'manageSites',
+    component: () => import('../views/manage/sites.vue'),
+    beforeEnter: pageCheck
+  },
+  {
+    path: '/manage/boards',
+    name: 'manageBoards',
+    component: () => import('../views/manage/boards.vue'),
     beforeEnter: pageCheck
   },
   {
     path: '/block/:msg',
-    name: 'block',
+    name: '차단',
     component: () => import('../views/block.vue')
   },
-  {
-    path: '/test',
-    name: 'test',
-    component: () => import('../views/test.vue')
-  },
+  // {
+  //   path: '/test',
+  //   name: 'test',
+  //   component: () => import('./views/test')
+  // },
   {
     path: '/sign',
-    name: 'login',
+    name: '로그인',
     component: () => import('../views/sign.vue')
   },
   {
-    path: '/site',
-    name: 'site',
-    component: () => import('../views/site.vue'),
-    beforeEnter: pageCheck
-  },
-  {
     path: '/register',
-    name: 'register',
+    name: '회원가입',
     component: () => import('../views/register.vue')
   },
   {

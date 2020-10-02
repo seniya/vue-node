@@ -37,8 +37,18 @@
                 required
               ></v-checkbox>
 
-              <v-btn @click="submit">submit</v-btn>
-              <v-btn @click="clear">clear</v-btn>
+              <vue-recaptcha
+                ref="recaptcha"
+                :sitekey="$cfg.recaptchaSiteKey"
+                size="invisible"
+                @verify="onVerify"
+                @expired="onExpired"
+              >
+              </vue-recaptcha>
+              <v-spacer></v-spacer>
+              <v-btn @click="checkRobot()">가입</v-btn>
+              <v-btn @click="clear">초기화</v-btn>
+
             </form>
           </v-card-text>
         </v-card>
@@ -64,7 +74,8 @@ export default {
       form: {
         id: '',
         name: '',
-        pwd: ''
+        pwd: '',
+        response: '' // add
       },
       agree: null,
       items: [
@@ -88,7 +99,7 @@ export default {
 
   methods: {
     submit () {
-      this.$axios.post('register', this.form)
+      this.$axios.post('/sign/up', this.form)
         .then(r => {
           if (!r.data.success) throw new Error('서버가 거부했습니다.')
           this.pop('가입 완료 되었습니다.', 'success')
@@ -108,6 +119,19 @@ export default {
       this.sb.act = true
       this.sb.msg = m
       this.sb.color = cl
+    },
+    onVerify (r) {
+      this.form.response = r
+      this.$refs.recaptcha.reset()
+      this.submit()
+    },
+    onExpired () {
+      this.form.response = ''
+      this.$refs.recaptcha.reset()
+    },
+    checkRobot () {
+      if (this.form.response) this.submit()
+      else this.$refs.recaptcha.execute()
     }
   }
 }

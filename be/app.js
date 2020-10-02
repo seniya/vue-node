@@ -5,7 +5,9 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 const cors = require('cors')
 const mongoose = require('mongoose')
+const moment = require('moment')
 const cfg = require('../config')
+
 
 
 var apiRouter = require('./routes/api/index');
@@ -40,6 +42,7 @@ app.use(function (err, req, res, next) {
   // render the error page
   res.status(err.status || 500);
   res.send({ msg: err.message })
+  console.error(err.message)
 });
 
 

@@ -2,19 +2,59 @@
   <v-app>
 
     <v-navigation-drawer v-model="drawer" app stateless>
-      <v-list dense>
-        <v-list-item link
-        v-for="(item, i) in items"
-          :key="i"
-          :to="item.to">
-          <v-list-item-action>
-            <v-icon>{{item.icon}}</v-icon>
-          </v-list-item-action>
-          <v-list-item-content>
-            <v-list-item-title>{{item.title}}</v-list-item-title>
-          </v-list-item-content>
-        </v-list-item>
+      <v-list>
+        <v-list-group
+        v-for="item in items"
+        :key="item.title"
+        v-model="item.active"
+        :prepend-icon="item.icon"
+        no-action
+        >
+          <template v-slot:activator>
+            <v-list-item-content>
+              <v-list-item-title v-text="item.title"></v-list-item-title>
+            </v-list-item-content>
+          </template>
+
+          <v-list-item
+            v-for="child in item.subItems"
+            :key="child.title"
+            :to="child.to"
+            :prepend-icon="child.icon"
+            link
+          >
+            <v-list-item-content >
+              <v-list-item-title v-text="child.title"></v-list-item-title>
+            </v-list-item-content>
+          </v-list-item>
+        </v-list-group>
       </v-list>
+<!--
+      <v-list dense>
+        <v-list-group
+          v-for="(item, i) in items"
+          v-model="item.act"
+          :prepend-icon="item.icon"
+          :key="i"
+          no-action
+        >
+          <v-list-tile slot="activator">
+            <v-list-tile-content>
+              <v-list-tile-title>{{ item.title }}</v-list-tile-title>
+            </v-list-tile-content>
+          </v-list-tile>
+          <v-list-tile
+            v-for="subItem in item.subItems"
+            :key="subItem.title"
+            :to="subItem.to"
+          >
+            <v-list-tile-content>
+              <v-list-tile-title>{{ subItem.title }}</v-list-tile-title>
+            </v-list-tile-content>
+          </v-list-tile>
+        </v-list-group>
+      </v-list> -->
+
     </v-navigation-drawer>
 
     <v-app-bar app dense>
@@ -58,10 +98,24 @@
     <v-footer app>
       <span class="white--text">{{siteCopyright}}</span>
     </v-footer>
+
+    <v-snackbar
+       v-model="$store.state.sb.act"
+       :color="$store.state.sb.color"
+     >
+       {{ $store.state.sb.msg }}
+       <v-btn
+         flat
+         @click="$store.commit('pop', { act: false })"
+       >
+         닫기
+       </v-btn>
+     </v-snackbar>
   </v-app>
 </template>
 
 <script>
+// this.$store.commit('pop', { msg: '내용을 작성해주세요', color: 'warning' })
 
 export default {
   name: 'App',
@@ -73,60 +127,107 @@ export default {
       siteDark: false,
       items: [
         {
-          icon: 'mdi-home',
-          title: 'lv0',
-          to: {
-            path: '/'
-          }
+          icon: 'mdi-view-dashboard',
+          title: '현황',
+          act: true,
+          subItems: [
+            {
+              title: '오늘',
+              to: {
+                path: '/'
+              }
+            }
+          ]
         },
         {
-          icon: 'mdi-home',
-          title: 'lv1',
-          to: {
-            path: '/lv1'
-          }
+          icon: 'mdi-chat',
+          title: '끄적끄적',
+          act: true,
+          subItems: [
+            {
+              icon: 'home',
+              title: 'anyone',
+              to: {
+                path: '/board/anyone'
+              }
+            },
+            {
+              icon: 'home',
+              title: 'test',
+              to: {
+                path: '/board/test'
+              }
+            }
+          ]
         },
         {
-          icon: 'mdi-home',
-          title: 'lv2',
-          to: {
-            path: '/lv2'
-          }
+          icon: 'mdi-pen',
+          title: '레벨테스트',
+          act: true,
+          subItems: [
+            {
+              icon: 'mdi-home',
+              title: '손님용 페이지',
+              to: {
+                path: '/test/lv3'
+              }
+            },
+            {
+              icon: 'mdi-paw',
+              title: '일반유저용 페이지',
+              to: {
+                path: '/test/lv2'
+              }
+            },
+            {
+              icon: 'mdi-pan',
+              title: '슈퍼유저용 페이지',
+              to: {
+                path: '/test/lv1'
+              }
+            },
+            {
+              icon: 'mdi-parachute',
+              title: '관리자용 페이지',
+              to: {
+                path: '/test/lv0'
+              }
+            }
+          ]
         },
         {
-          icon: 'mdi-home',
-          title: 'lv3',
-          to: {
-            path: '/lv3'
-          }
-        },
-        {
-          icon: 'mdi-face',
-          title: '사용자관리',
-          to: {
-            path: '/user'
-          }
-        },
-        {
-          icon: 'mdi-face',
-          title: '페이지관리',
-          to: {
-            path: '/page'
-          }
-        },
-        {
-          icon: 'mdi-sitemap',
-          title: '사이트관리',
-          to: {
-            path: '/site'
-          }
-        },
-        {
-          icon: 'mdi-face',
-          title: 'header',
-          to: {
-            path: '/header'
-          }
+          icon: 'mdi-cogs',
+          title: '관리메뉴',
+          subItems: [
+            {
+              icon: 'mdi-face',
+              title: '사용자관리',
+              to: {
+                path: '/manage/users'
+              }
+            },
+            {
+              icon: 'mdi-book-open-page-variant',
+              title: '페이지관리',
+              to: {
+                path: '/manage/pages'
+              }
+            },
+            {
+              icon: 'mdi-sitemap',
+              title: '사이트관리',
+              to: {
+                path: '/manage/sites'
+              }
+            },
+            {
+              icon: 'mdi-bulletin-board',
+              title: '게시판관리',
+              to: {
+                path: '/manage/boards'
+              }
+            }
+          ]
         }
       ],
       title: this.$apiRootPath
