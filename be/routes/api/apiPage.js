@@ -1,7 +1,7 @@
-var express = require('express');
-var createError = require('http-errors');
-var router = express.Router();
-const Page = require('../../../models/pages')
+const express = require('express');
+const createError = require('http-errors');
+const router = express.Router();
+const Page = require('../../models/pages')
 
 router.post('/', function (req, res, next) {
   const { name } = req.body

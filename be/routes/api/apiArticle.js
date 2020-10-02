@@ -1,8 +1,8 @@
-var express = require('express');
-var createError = require('http-errors');
-var router = express.Router();
-const Board = require('../../../models/boards')
-const Article = require('../../../models/articles')
+const express = require('express');
+const createError = require('http-errors');
+const router = express.Router();
+const Board = require('../../models/boards')
+const Article = require('../../models/articles')
 
 router.get('/list/:_board', (req, res, next) => {
   const _board = req.params._board

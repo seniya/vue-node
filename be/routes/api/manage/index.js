@@ -7,10 +7,10 @@ router.all('*', function (req, res, next) {
   next()
 })
 
-router.use('/user', require('./user'))
-router.use('/page', require('./page'))
-router.use('/site', require('./site'))
-router.use('/board', require('./board'))
+router.use('/user', require('./apiManageUser.js'))
+router.use('/page', require('./apiManagePage.js'))
+router.use('/site', require('./apiManageSite.js'))
+router.use('/board', require('./apiManageBoard.js'))
 
 router.all('*', function (req, res, next) {
   // if (req.user.lv) return res.send({ success: false, msg: '권한이 없습니다.' })

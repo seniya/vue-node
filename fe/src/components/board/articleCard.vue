@@ -12,8 +12,8 @@
 
       <v-divider light></v-divider>
       <v-card-actions>
-        <v-btn flat color="orange" @click="modeChange(board)">수정</v-btn>
-        <v-btn flat color="error" @click="ca=true">삭제</v-btn>
+        <v-btn text color="orange" @click="modeChange(board)">수정</v-btn>
+        <v-btn text color="error" @click="ca=true">삭제</v-btn>
       </v-card-actions>
     </template>
     <template v-else>
@@ -49,8 +49,8 @@
       </v-card-text>
       <v-card-actions>
         <v-spacer></v-spacer>
-        <v-btn color="green darken-1" flat @click="mod(board)">확인</v-btn>
-        <v-btn color="error darken-1" flat @click.native="edit = false">취소</v-btn>
+        <v-btn color="green darken-1" text @click="mod(board)">확인</v-btn>
+        <v-btn color="error darken-1" text @click.native="edit = false">취소</v-btn>
       </v-card-actions>
     </template>
 

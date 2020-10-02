@@ -4,8 +4,8 @@ const router = express.Router()
 const crypto = require('crypto')
 
 const jwt = require('jsonwebtoken')
-const cfg = require('../../../../config')
-const User = require('../../../models/users')
+const cfg = require('../../../config')
+const User = require('../../models/users')
 const request = require('request')
 
 

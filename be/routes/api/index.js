@@ -1,14 +1,13 @@
-var express = require('express');
-var createError = require('http-errors');
-var router = express.Router();
+const express = require('express');
+const createError = require('http-errors');
+const router = express.Router();
 const moment = require('moment')
 const jwt = require('jsonwebtoken');
 const cfg = require('../../../config')
 
-router.use('/site', require('./site'))
-router.use('/board', require('./board'))
-router.use('/sign', require('./sign'))
-router.use('/register', require('./register'))
+router.use('/siteInfo', require('./apiSite.js'))
+router.use('/board', require('./apiBoard.js'))
+router.use('/sign', require('./apiSign.js'))
 
 const verifyToken = (t) => {
   return new Promise((resolve, reject) => {
@@ -65,9 +64,8 @@ router.all('*', function (req, res, next) {
     .catch(e => next(createError(401, e.message)))
 })
 
-router.use('/page', require('./page'))
-
-router.use('/article', require('./article'))
+router.use('/pageAuth', require('./apiPage.js'))
+router.use('/article', require('./apiArticle.js'))
 router.use('/manage', require('./manage'))
 
 

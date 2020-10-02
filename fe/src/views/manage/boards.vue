@@ -1,28 +1,15 @@
 <template>
-  <v-container grid-list-md>
-    <v-alert
-      :value="!boards.length"
-      type="warning"
-    >
+  <v-container fluid>
+    <v-row>
+      <v-col v-for="item in items" :key="item._id" cols="12" sm="6" md="4" lg="3">
+        <board-card :board="item" @list="list"></board-card>
+      </v-col>
+    </v-row>
+
+    <v-alert :value="!items.length" type="warning">
       데이터가 없습니다
     </v-alert>
-    <v-layout row wrap>
-      <v-flex xs12 sm6 md4 v-for="board in boards" :key="board._id">
-        <board-card :board="board" @list="list"></board-card>
-      </v-flex>
-      <v-btn
-        color="pink"
-        dark
-        small
-        absolute
-        bottom
-        right
-        fab
-        @click="addDialog"
-      >
-        <v-icon>mdi-plus</v-icon>
-      </v-btn>
-    </v-layout>
+
     <v-dialog v-model="dialog" persistent max-width="500px">
       <v-card>
         <v-card-title>
@@ -67,20 +54,13 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
-    <v-snackbar
-      v-model="sb.act"
-    >
-      {{ sb.msg }}
-      <v-btn
-        :color="sb.color"
-        text
-        @click="sb.act = false"
-      >
-        닫기
-      </v-btn>
-    </v-snackbar>
+
+    <v-btn elevation="6" absolute bottom right fab @click="addDialog" class="mb-2">
+      <v-icon>mdi-pencil</v-icon>
+    </v-btn>
   </v-container>
 </template>
+
 <script>
 import boardCard from '@/components/manage/boardCard.vue'
 
@@ -88,7 +68,7 @@ export default {
   components: { boardCard },
   data () {
     return {
-      boards: [],
+      items: [],
       dialog: false,
       lvs: [0, 1, 2, 3],
       form: {
@@ -96,12 +76,7 @@ export default {
         rmk: '',
         lv: 0
       },
-      selected: 0,
-      sb: {
-        act: false,
-        msg: '',
-        color: 'error'
-      }
+      selected: 0
     }
   },
   mounted () {
@@ -116,30 +91,23 @@ export default {
         lv: 0
       }
     },
-    add () {
+    async add () {
       if (!this.form.name) return this.pop('이름을 작성해주세요', 'warning')
-      this.$axios.post('manage/board', this.form)
-        .then((r) => {
-          this.dialog = false
-          this.list()
-        })
-        .catch((e) => {
-          this.pop(e.message, 'error')
-        })
+      try {
+        await this.$store.dispatch('manage/BOARD_ADD', this.form)
+        this.dialog = false
+        this.list()
+      } catch (error) {
+        this.$store.commit('pop', { msg: error.message, color: 'warning' })
+      }
     },
-    list () {
-      this.$axios.get('manage/board')
-        .then(({ data }) => {
-          this.boards = data.ds
-        })
-        .catch((e) => {
-          this.pop(e.message, 'error')
-        })
-    },
-    pop (m, c) {
-      this.sb.act = true
-      this.sb.msg = m
-      this.sb.color = c
+    async list () {
+      try {
+        const data = await this.$store.dispatch('manage/BOARD_INFO')
+        this.items = data
+      } catch (error) {
+        this.$store.commit('pop', { msg: error.message, color: 'warning' })
+      }
     }
   }
 }

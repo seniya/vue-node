@@ -7,13 +7,19 @@ const userSchema = new mongoose.Schema({
   age: { type: Number, default: 1 },
   id: { type: String, default: '', unique: true, index: true },
   pwd: { type: String, default: '' },
-  lv: { type: Number, default: 2 }, //add
-  inCnt: { type: Number, default: 0 }, //add
+  lv: { type: Number, default: 2 },
+  inCnt: { type: Number, default: 0 },
+  email: { type: String, default: '' },
+  photo: { type: String, default: '' },
+  googleId: { type: String, default: '' },
+  facebookId: { type: String, default: '' },
+  snsToken: { type: String, default: '' },
+  termsAgree: { type: Boolean, default: false },
+  approval: { type: Boolean, default: false },
   retry: { type: Number, default: 0 }
 })
 
 const User = mongoose.model('User', userSchema);
-// User.collection.dropIndexes({ name: 1 })
 
 /*
 User.findOne({ id: cfg.admin.id })

@@ -12,8 +12,8 @@
 
       <v-divider light></v-divider>
       <v-card-actions>
-        <v-btn flat color="orange" @click="modeChange(board)">수정</v-btn>
-        <v-btn flat color="error" @click="ca=true">삭제</v-btn>
+        <v-btn outlined color="primary" @click="modeChange(board)">수정</v-btn>
+        <v-btn outlined color="error" @click="ca=true">삭제</v-btn>
       </v-card-actions>
     </template>
     <template v-else>
@@ -49,21 +49,24 @@
       </v-card-text>
       <v-card-actions>
         <v-spacer></v-spacer>
-        <v-btn color="green darken-1" flat @click="mod(board)">확인</v-btn>
-        <v-btn color="error darken-1" flat @click.native="edit = false">취소</v-btn>
+        <v-btn color="green darken-1" text @click="update(board)">확인</v-btn>
+        <v-btn color="error darken-1" text @click.native="edit = false">취소</v-btn>
       </v-card-actions>
     </template>
 
-    <v-card-text v-if="ca">
-      <v-alert v-model="ca" type="warning">
-        <h4>정말 진행 하시겠습니까?</h4>
-        <v-btn color="error" @click="del(board)">확인</v-btn>
-        <v-btn color="secondary" @click="ca=false">취소</v-btn>
+    <template v-if="ca">
+      <v-alert prominent type="warning">
+        <v-row align="center">
+          <v-col class="grow">
+            정말 진행 하시겠습니까?
+          </v-col>
+          <v-col class="shrink">
+            <v-btn color="error" @click="remove(board)">확인</v-btn>
+            <v-btn color="secondary" @click="ca=false">취소</v-btn>
+          </v-col>
+        </v-row>
       </v-alert>
-    </v-card-text>
-    <v-card-text v-if="ma.act">
-      <v-alert v-model="ma.act" :type="ma.type" dismissible>{{ma.msg}}</v-alert>
-    </v-card-text>
+    </template>
   </v-card>
 </template>
 <script>
@@ -72,11 +75,6 @@ export default {
   data () {
     return {
       ca: false,
-      ma: {
-        act: false,
-        msg: '',
-        type: 'error'
-      },
       lvs: [0, 1, 2, 3],
       form: {
         name: '',
@@ -95,38 +93,26 @@ export default {
         rmk: b.rmk
       }
     },
-    mod (board) {
-      if (board.name === this.form.name && board.rmk === this.form.rmk && board.lv === this.form.lv) return this.pop('변경한 것이 없습니다.', 'warning')
-      this.$axios.put(`/manage/board/${board._id}`, this.form)
-        .then((r) => {
-          if (!r.data.success) throw new Error(r.data.msg)
-          board.name = this.form.name
-          board.rmk = this.form.rmk
-          board.lv = this.form.lv
-          this.edit = false
-        })
-        .catch((e) => {
-          this.pop(e.message, 'error')
-        })
+    async update (board) {
+      if (board.name === this.form.name && board.rmk === this.form.rmk && board.lv === this.form.lv) {
+        return this.$store.commit('pop', { msg: '변경한 것이 없습니다.', color: 'warning' })
+      }
+      try {
+        const data = await this.$store.dispatch('manage/BOARD_UPDATE', { id: board._id, data: this.form })
+        if (!data.success) throw new Error(data.msg)
+        this.$emit('list')
+        this.edit = false
+      } catch (error) {
+        this.$store.commit('pop', { msg: error.message, color: 'error' })
+      }
     },
-    del (board) {
-      this.$axios.delete(`/manage/board/${board._id}`)
-        .then((r) => {
-          if (!r.data.success) throw new Error(r.data.msg)
-          this.$emit('list')
-        })
-        .catch((e) => {
-          this.pop(e.message, 'error')
-        })
-    },
-    pop (m, t) {
-      if (this.ma.act) return
-      this.ma.act = true
-      this.ma.msg = m
-      this.ma.type = t
-      setTimeout(() => {
-        this.ma.act = false
-      }, 6000)
+    remove (board) {
+      try {
+        this.$store.dispatch('manage/BOARD_REMOVE', { id: board._id })
+        this.$emit('list')
+      } catch (error) {
+        this.$store.commit('pop', { msg: error.message, color: 'error' })
+      }
     }
   }
 }

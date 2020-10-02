@@ -1,7 +1,7 @@
-var express = require('express');
-var createError = require('http-errors');
-var router = express.Router();
-const Board = require('../../../models/boards')
+const express = require('express');
+const createError = require('http-errors');
+const router = express.Router();
+const Board = require('../../models/boards')
 
 router.get('/read/:name', (req, res, next) => {
   const name = req.params.name
