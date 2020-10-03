@@ -15,7 +15,25 @@ function apiSiteInfo () {
   })
 }
 
+function apiSignUp (fdata) {
+  return instance({
+    method: 'POST',
+    url: '/sign/up',
+    data: fdata
+  })
+}
+
+function apiSignIn (fdata) {
+  return instance({
+    method: 'POST',
+    url: '/sign/in',
+    data: fdata
+  })
+}
+
 export {
   apiPageAuth,
-  apiSiteInfo
+  apiSiteInfo,
+  apiSignUp,
+  apiSignIn
 }

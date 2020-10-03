@@ -62,7 +62,7 @@
 </template>
 
 <script>
-import boardCard from '@/components/manage/boardCard.vue'
+import boardCard from '@/views/manage/components/boardCard.vue'
 
 export default {
   components: { boardCard },

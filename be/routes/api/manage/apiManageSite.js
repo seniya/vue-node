@@ -6,7 +6,7 @@ const Site = require('../../../models/sites')
 router.get('/', function (req, res, next) {
   Site.find()
     .then(r => {
-      res.send({ success: true, sites: r, token: req.token })
+      res.send({ success: true, body: r, token: req.token })
     })
     .catch(e => {
       res.send({ success: false })

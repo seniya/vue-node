@@ -7,7 +7,7 @@ router.get('/', function (req, res, next) {
   // User.find()
   User.find().select('-pwd')
     .then(r => {
-      res.send({ success: true, users: r, token: req.token })
+      res.send({ success: true, body: r, token: req.token })
     })
     .catch(e => {
       res.send({ success: false })

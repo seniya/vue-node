@@ -1,6 +1,8 @@
 import {
   apiPageAuth,
-  apiSiteInfo
+  apiSiteInfo,
+  apiSignUp,
+  apiSignIn
 } from '@/api/apiAuth'
 
 const state = {
@@ -17,7 +19,7 @@ const getters = {
     return state.token
   },
   getSiteInfo: state => {
-    return state.token
+    return state.siteInfo
   }
 }
 
@@ -39,6 +41,24 @@ const actions = {
     const { data } = await apiSiteInfo()
     context.commit('setSiteInfo', data.body)
     return data.body
+  },
+  async SIGN_UP (context, payload) {
+    const { data } = await apiSignUp(payload)
+    return data
+  },
+  async SIGN_IN (context, payload) {
+    console.log('SIGN_IN 1', state.token)
+    const { data } = await apiSignIn(payload)
+    localStorage.setItem('token', data.body)
+    context.commit('setToken', data.body)
+    console.log('SIGN_IN 2', state.token)
+    return data
+  },
+  async SIGN_OUT (context, payload) {
+    console.log('SIGN_OUT 1', state.token)
+    localStorage.removeItem('token')
+    context.commit('setToken', null)
+    console.log('SIGN_OUT 2', state.token)
   }
 }
 

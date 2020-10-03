@@ -47,18 +47,18 @@
           </v-btn>
         </template>
         <v-list>
-          <v-list-item  @click="$router.push('/')">
+          <v-list-item  @click="moveMain">
             <v-list-item-title>홈으로</v-list-item-title>
           </v-list-item>
-          <template v-if="!$store.state.token">
-            <v-list-item @click="$router.push('/sign')">
+          <template v-if="!$store.state.auth.token">
+            <v-list-item @click="$router.push('/sign/in')">
               <v-list-item-title>로그인</v-list-item-title>
             </v-list-item>
-            <v-list-item @click="$router.push('/register')">
+            <v-list-item @click="$router.push('/sign/up')">
               <v-list-item-title>회원가입</v-list-item-title>
             </v-list-item>
           </template>
-          <v-list-item v-else @click="signOut">
+          <v-list-item v-else @click="$router.push('/sign/out')">
             <v-list-item-title>로그아웃</v-list-item-title>
           </v-list-item>
         </v-list>
@@ -81,7 +81,6 @@
 </template>
 
 <script>
-// this.$store.commit('pop', { msg: '내용을 작성해주세요', color: 'warning' })
 import { getSiteMenu } from '@/util/common'
 
 export default {
@@ -101,10 +100,14 @@ export default {
     this.getSite()
   },
   methods: {
-    signOut () {
-      // localStorage.removeItem('token')
-      this.$store.commit('delToken')
-      this.$router.push('/')
+    moveMain () {
+      const currentUrl = window.location.pathname
+      if (currentUrl !== '/') {
+        this.$router.push('/')
+      } else {
+        this.$store.commit('pop', { msg: '지금 페이지야', color: 'warning' })
+      }
+      console.log(currentUrl)
     },
     async getSite () {
       try {

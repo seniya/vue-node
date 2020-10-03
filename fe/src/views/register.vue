@@ -54,13 +54,7 @@
         </v-card>
       </v-flex>
     </v-layout>
-    <v-snackbar v-model="sb.act">
-      {{ sb.msg }}
-      <v-btn :color="sb.color" text @click="sb.act = false">
-        닫기
-      </v-btn>
-    </v-snackbar>
-  </v-container>
+</v-container>
 </template>
 
 <script>
@@ -84,12 +78,7 @@ export default {
         'Item 3',
         'Item 4'
       ],
-      checkbox: null,
-      sb: {
-        act: false,
-        msg: '',
-        color: 'warning'
-      }
+      checkbox: null
     }
   },
 
@@ -98,15 +87,14 @@ export default {
   },
 
   methods: {
-    submit () {
-      this.$axios.post('/sign/up', this.form)
-        .then(r => {
-          if (!r.data.success) throw new Error('서버가 거부했습니다.')
-          this.pop('가입 완료 되었습니다.', 'success')
-
-          this.$router.push('/sign')
-        })
-        .catch(e => this.pop(e.message, 'warning'))
+    async submit () {
+      try {
+        const data = await this.$store.dispatch('auth/SIGN_UP', this.form)
+        if (!data.success) throw new Error(data.msg)
+        this.$router.push('/sign')
+      } catch (error) {
+        this.$store.commit('pop', { msg: error.message, color: 'error' })
+      }
     },
     clear () {
       this.name = ''
@@ -114,11 +102,6 @@ export default {
       this.select = null
       this.checkbox = null
       // this.$validator.reset()
-    },
-    pop (m, cl) {
-      this.sb.act = true
-      this.sb.msg = m
-      this.sb.color = cl
     },
     onVerify (r) {
       this.form.response = r

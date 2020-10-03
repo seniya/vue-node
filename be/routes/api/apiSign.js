@@ -39,10 +39,9 @@ router.post('/in', (req, res) => {
       return signToken(r._id, r.id, r.lv, r.name, remember)
     })
     .then((r) => {
-      res.send({ success: true, token: r })
+      res.send({ success: true, body: r })
     })
     .catch((e) => {
-      // throw createError(400, '몰라몰라2')
       res.send({ success: false, msg: e.message })
       // next(createError(401, e.massage))
     })

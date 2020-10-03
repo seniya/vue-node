@@ -2,6 +2,7 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 import axios from 'axios'
 import routesMain from '@/router/routesMain'
+import routesSign from '@/router/routesSign'
 
 Vue.use(VueRouter)
 
@@ -42,7 +43,18 @@ axios.interceptors.response.use(function (response) {
 })
 
 const routes = [
-  routesMain
+  routesMain,
+  routesSign,
+  {
+    path: '/test',
+    name: 'test',
+    component: () => import('@/views/test.vue')
+  },
+  {
+    path: '*',
+    name: 'e404',
+    component: () => import('@/views/e404.vue')
+  }
 ]
 
 const router = new VueRouter({

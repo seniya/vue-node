@@ -8,7 +8,6 @@ Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
-    token: localStorage.getItem('token'),
     sb: {
       act: false,
       msg: '',
@@ -16,13 +15,6 @@ export default new Vuex.Store({
     }
   },
   mutations: {
-    getToken (state) {
-      state.token = localStorage.getItem('token')
-    },
-    delToken (state) {
-      localStorage.removeItem('token')
-      state.token = null
-    },
     pop (state, d) {
       state.sb.msg = d.msg
       state.sb.color = d.color

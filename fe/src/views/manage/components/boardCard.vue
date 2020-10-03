@@ -2,7 +2,7 @@
   <v-card>
     <template v-if="!edit">
       <v-card-title primary-title>
-        <h3 class="headline mb-0">{{board.name}}</h3>
+        <h3>{{board.name}}</h3>
       </v-card-title>
       <v-divider light></v-divider>
       <v-card-text>
@@ -61,7 +61,7 @@
             정말 진행 하시겠습니까?
           </v-col>
           <v-col class="shrink">
-            <v-btn color="error" @click="remove(board)">확인</v-btn>
+            <v-btn class="mb-2" color="error" @click="remove(board)">확인</v-btn>
             <v-btn color="secondary" @click="ca=false">취소</v-btn>
           </v-col>
         </v-row>
