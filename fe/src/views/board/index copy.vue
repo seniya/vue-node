@@ -1,125 +1,4 @@
 <template>
-  <v-container >
-    <v-row >
-      <v-col cols="12">
-        <v-data-table
-          :headers="headerArray"
-          :items="articles"
-          :search="search"
-          :loading="isLoading"
-          item-key="_id"
-          class="elevation-1"
-          >
-
-          <template v-slot:body="{ items }">
-            <tbody>
-              <tr v-for="item in items" :key="item._id">
-                <td>{{ item.category }}</td>
-                <td>
-                  <a @click="readArticle(item)">
-                    {{ item.title }}
-                  </a>
-                </td>
-                <td>{{ item.cnt.view }}</td>
-                <td>{{ item.cnt.like }}</td>
-                <td>{{ item._user.name || 'guest'}}</td>
-                <td><displayTime :time=" item.createDate" /></td>
-                <td><displayTime :time=" item.updateDate" /></td>
-              </tr>
-            </tbody>
-          </template>
-        </v-data-table>
-      </v-col>
-    </v-row>
-
-    <v-btn
-      color="pink"
-      dark
-      small
-      absolute
-      bottom
-      right
-      fab
-      @click="addDialog"
-    >
-      <v-icon>mdi-plus</v-icon>
-    </v-btn>
-
-    <v-dialog v-model="dlRead" persistent max-width="500px">
-      <v-card>
-        <v-card-title>
-          <span class="headline">{{rd.title}}</span>
-        </v-card-title>
-        <v-card-text>
-          {{rd.content}}
-        </v-card-text>
-        <v-card-actions>
-          <v-spacer></v-spacer>
-          <v-btn color="red darken-1" text @click.native="dlRead = false">닫기</v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
-
-    <v-dialog v-model="dialog" persistent max-width="500px">
-      <v-card v-if="!dlMode">
-        <v-card-title>
-          <span class="headline">{{selArticle.title}}</span>
-        </v-card-title>
-        <v-card-text>
-          {{selArticle.content}}
-        </v-card-text>
-        <v-card-actions>
-          <v-spacer></v-spacer>
-          <v-btn color="warning darken-1" text @click.native="modDialog()">수정</v-btn>
-          <v-btn color="error darken-1" text @click.native="ca=true">삭제</v-btn>
-          <v-btn color="secondary darken-1" text @click.native="dialog = false">닫기</v-btn>
-        </v-card-actions>
-        <v-card-text>
-          <v-card-text v-if="ca">
-            <v-alert v-model="ca" type="warning">
-              <h4>정말 진행 하시겠습니까?</h4>
-              <v-btn color="error" @click="removeArticle()">확인</v-btn>
-              <v-btn color="secondary" @click="ca=false">취소</v-btn>
-            </v-alert>
-          </v-card-text>
-        </v-card-text>
-      </v-card>
-      <v-card v-else>
-        <v-card-title>
-          <span class="headline">글 {{(dlMode === 1) ? '작성' : '수정'}}</span>
-        </v-card-title>
-        <v-card-text>
-          <v-container grid-list-md>
-            <v-layout wrap>
-              <v-flex xs12>
-                <v-text-field
-                  label="제목"
-                  persistent-hint
-                  required
-                  v-model="form.title"
-                ></v-text-field>
-              </v-flex>
-              <v-flex xs12>
-                <v-textarea
-                  label="내용"
-                  persistent-hint
-                  required
-                  v-model="form.content"
-                ></v-textarea>
-              </v-flex>
-            </v-layout>
-          </v-container>
-        </v-card-text>
-        <v-card-actions>
-          <v-spacer></v-spacer>
-          <v-btn color="green darken-1" text @click="(dlMode === 1) ? addArticle() : updateArticle()">확인</v-btn>
-          <v-btn color="red darken-1" text @click.native="dialog = false">취소</v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
-
-  </v-container>
-  <!--
   <v-container grid-list-md>
     <v-layout row wrap>
       <v-flex xs12>
@@ -142,13 +21,13 @@
           </v-img>
         </v-card>
       </v-flex>
-
+      <!--
       <v-flex xs12 sm6 md4 v-for="article in articles" :key="article._id">
         {{article}}
       </v-flex>
       :server-items-length="itemTotal"
       :server-items-length="pagination.totalItems"
-
+      -->
       <v-flex xs12 sm4 offset-sm8>
         <v-text-field
           label="검색"
@@ -182,16 +61,108 @@
       </v-flex>
     </v-layout>
 
+    <v-btn
+      color="pink"
+      dark
+      small
+      absolute
+      bottom
+      right
+      fab
+      @click="addDialog"
+    >
+      <v-icon>mdi-plus</v-icon>
+    </v-btn>
+    <v-dialog v-model="dlRead" persistent max-width="500px">
+      <v-card>
+        <v-card-title>
+          <span class="headline">{{rd.title}}</span>
+        </v-card-title>
+        <v-card-text>
+          {{rd.content}}
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn color="red darken-1" text @click.native="dlRead = false">닫기</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+    <v-dialog v-model="dialog" persistent max-width="500px">
+      <v-card v-if="!dlMode">
+        <v-card-title>
+          <span class="headline">{{selArticle.title}}</span>
+        </v-card-title>
+        <v-card-text>
+          {{selArticle.content}}
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn color="warning darken-1" text @click.native="modDialog()">수정</v-btn>
+          <v-btn color="error darken-1" text @click.native="ca=true">삭제</v-btn>
+          <v-btn color="secondary darken-1" text @click.native="dialog = false">닫기</v-btn>
+        </v-card-actions>
+        <v-card-text>
+          <v-card-text v-if="ca">
+            <v-alert v-model="ca" type="warning">
+              <h4>정말 진행 하시겠습니까?</h4>
+              <v-btn color="error" @click="del()">확인</v-btn>
+              <v-btn color="secondary" @click="ca=false">취소</v-btn>
+            </v-alert>
+          </v-card-text>
+        </v-card-text>
+      </v-card>
+      <v-card v-else>
+        <v-card-title>
+          <span class="headline">글 {{(dlMode === 1) ? '작성' : '수정'}}</span>
+        </v-card-title>
+        <v-card-text>
+          <v-container grid-list-md>
+            <v-layout wrap>
+              <v-flex xs12>
+                <v-text-field
+                  label="제목"
+                  persistent-hint
+                  required
+                  v-model="form.title"
+                ></v-text-field>
+              </v-flex>
+              <v-flex xs12>
+                <v-textarea
+                  label="내용"
+                  persistent-hint
+                  required
+                  v-model="form.content"
+                ></v-textarea>
+              </v-flex>
+            </v-layout>
+          </v-container>
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn color="green darken-1" text @click="(dlMode === 1) ? addArticle() : mod()">확인</v-btn>
+          <v-btn color="red darken-1" text @click.native="dialog = false">취소</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+    <v-snackbar
+      v-model="sb.act"
+    >
+      {{ sb.msg }}
+      <v-btn
+        :color="sb.color"
+        text
+        @click="sb.act = false"
+      >
+        닫기
+      </v-btn>
+    </v-snackbar>
   </v-container>
-
-  -->
 </template>
 <script>
 // import boardCard from '@/components/manage/boardCard.vue'
-import displayTime from '@/components/displayTime.vue'
 
 export default {
-  components: { displayTime },
+  // components: { boardCard },
   data () {
     return {
       board: {
@@ -207,6 +178,11 @@ export default {
       form: {
         title: '',
         content: ''
+      },
+      sb: {
+        act: false,
+        msg: '',
+        color: 'error'
       },
       headers: [
         { text: '날짜', value: '_id', sortable: true, class: 'hidden-sm-and-down' },
@@ -235,26 +211,7 @@ export default {
         order: 0,
         limit: 1
       },
-      timeout: null,
-      enabled: null,
-      search: null,
-      headerArray: [
-        // {
-        //   text: 'Dessert (100g serving)',
-        //   align: 'start',
-        //   sortable: false,
-        //   value: 'name'
-        // },
-        { text: 'Category', value: 'category' },
-        { text: 'Title', value: 'title' },
-        { text: 'View', value: 'view' },
-        { text: 'Like', value: 'like' },
-        { text: 'User', value: '_user' },
-        { text: 'createDate', value: 'createDate' },
-        { text: 'updateDate', value: 'updateDate' }
-      ],
-      isLoading: true,
-      selected: []
+      timeout: null
     }
   },
   watch: {
@@ -297,27 +254,24 @@ export default {
   },
   mounted () {
     this.getBoard()
-    this.isLoading = false
   },
   methods: {
     async getBoard () {
       try {
         const data = await this.$store.dispatch('board/BOARD_INFO', { id: this.$route.params.name })
-        if (!data.success) throw new Error(data.msg)
         this.board = data.body
         this.getArticles()
       } catch (error) {
-        this.$toast.error(error.message)
+        this.$store.commit('pop', { msg: error.message, color: 'warning' })
       }
     },
     async getArticles () {
       try {
         const data = await this.$store.dispatch('article/ARTICLE_ITEMS', { id: this.board._id })
-        if (!data.success) throw new Error(data.msg)
         console.log('getArticles : ', data)
         this.articles = data.body
       } catch (error) {
-        this.$toast.error(error.message)
+        this.$store.commit('pop', { msg: error.message, color: 'warning' })
       }
     },
     async addArticle () {
@@ -334,51 +288,14 @@ export default {
         this.$store.commit('pop', { msg: error.message, color: 'warning' })
       }
     },
-    async readArticle (atc) {
-      this.$router.push(`/board/${this.$route.params.name}/${atc._id}`)
-
-      this.selArticle = atc
-      this.loading = true
-
-      const data = await this.$store.dispatch('article/ARTICLE_READ', { id: atc._id })
-      console.log('readArticle : ', data)
-
-      this.dlMode = 0
-      this.dialog = true
-      this.selArticle.content = data.body.content
-      this.selArticle.cnt.view = data.body.cnt.view
-      this.loading = false
-    },
-    async updateArticle () {
-      if (!this.form.title) return this.pop('제목을 작성해주세요', 'warning')
-      if (!this.form.content) return this.pop('내용을 작성해주세요', 'warning')
-      if (this.selArticle.title === this.form.title && this.selArticle.content === this.form.content) {
-        // return this.pop('변경된 내용이 없습니다', 'warning')
-        return
-      }
-
-      const data = await this.$store.dispatch('article/ARTICLE_UPDATE', { id: this.selArticle._id, fdata: this.form })
-      console.log('updateArticle : ', data)
-
-      this.dialog = false
-      if (!data.success) throw new Error(data.msg)
-      this.selArticle.title = data.body.title
-      this.selArticle.content = data.body.content
-    },
-
-    async removeArticle (atc) {
-      const data = await this.$store.dispatch('article/ARTICLE_REMOVE', { id: this.selArticle._id })
-      console.log('removeArticle : ', data)
-      this.dialog = false
-      if (!data.success) throw new Error(data.msg)
-      this.getArticles()
-    },
-
-    //
-    // ARTICLE_REMOVE
 
     addDialog () {
-      this.$router.push(`/board/${this.$route.params.name}/add`)
+      this.dialog = true
+      this.dlMode = 1
+      this.form = {
+        title: '',
+        content: ''
+      }
     },
     modDialog () {
       this.dlMode = 2
@@ -388,6 +305,18 @@ export default {
       }
     },
 
+    add () {
+      if (!this.form.title) return this.pop('제목을 작성해주세요', 'warning')
+      if (!this.form.content) return this.pop('내용을 작성해주세요', 'warning')
+      this.$axios.post(`/article/${this.board._id}`, this.form)
+        .then((r) => {
+          this.dialog = false
+          this.list()
+        })
+        .catch((e) => {
+          this.pop(e.message, 'error')
+        })
+    },
     list () {
       if (this.loading) return
       if (!this.board._id) return
@@ -409,6 +338,65 @@ export default {
           this.pop(e.message, 'error')
           this.loading = false
         })
+    },
+    read (atc) {
+      this.selArticle = atc
+      this.loading = true
+      this.$axios.get(`/article/read/${atc._id}`)
+        .then(({ data }) => {
+          if (!data.success) throw new Error(data.msg)
+          this.dlMode = 0
+          this.dialog = true
+          this.selArticle.content = data.d.content
+          this.selArticle.cnt.view = data.d.cnt.view
+          this.loading = false
+        })
+        .catch((e) => {
+          this.pop(e.message, 'error')
+          this.loading = false
+        })
+    },
+    mod () {
+      if (!this.form.title) return this.pop('제목을 작성해주세요', 'warning')
+      if (!this.form.content) return this.pop('내용을 작성해주세요', 'warning')
+      if (this.selArticle.title === this.form.title && this.selArticle.content === this.form.content) { return this.pop('변경된 내용이 없습니다', 'warning') }
+      this.$axios.put(`/article/${this.selArticle._id}`, this.form)
+        .then(({ data }) => {
+          this.dialog = false
+          if (!data.success) throw new Error(data.msg)
+          this.selArticle.title = data.d.title
+          this.selArticle.content = data.d.content
+          // this.list()
+        })
+        .catch((e) => {
+          this.pop(e.message, 'error')
+        })
+    },
+    del () {
+      this.$axios.delete(`/article/${this.selArticle._id}`)
+        .then(({ data }) => {
+          this.dialog = false
+          if (!data.success) throw new Error(data.msg)
+          this.list()
+        })
+        .catch((e) => {
+          this.pop(e.message, 'error')
+        })
+    },
+    pop (m, c) {
+      this.sb.act = true
+      this.sb.msg = m
+      this.sb.color = c
+    },
+    id2date (val) {
+      if (!val) return '잘못된 시간 정보'
+      return new Date(parseInt(val.substring(0, 8), 16) * 1000).toLocaleString()
+    },
+    delay () {
+      clearTimeout(this.timeout)
+      this.timeout = setTimeout(() => {
+        this.list()
+      }, 1000)
     }
   }
 }

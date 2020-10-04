@@ -5,6 +5,10 @@ import store from './store'
 import LoadScript from 'vue-plugin-load-script'
 import VueRecaptcha from 'vue-recaptcha'
 import vuetify from './plugins/vuetify'
+import './plugins/moment'
+import './plugins/editor'
+import './error'
+
 import cfg from '../config'
 
 Vue.config.productionTip = false

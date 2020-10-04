@@ -27,6 +27,18 @@ const children = [
     beforeEnter: pageCheck
   },
   {
+    path: '/board/:name/add',
+    name: 'board',
+    component: () => import('@/views/board/addPage.vue'),
+    beforeEnter: pageCheck
+  },
+  {
+    path: '/board/:name/:articleid',
+    name: 'Article',
+    component: () => import('@/views/board/readPage.vue'),
+    beforeEnter: pageCheck
+  },
+  {
     path: '/test/lv3',
     name: 'testLv3',
     component: () => import('@/views/test/lv3.vue'),

@@ -35,7 +35,7 @@ router.get('/list/:_board', (req, res, next) => {
         .populate('_user', '-pwd')
     })
     .then(rs => {
-      res.send({ success: true, t: total, ds: rs, token: req.token })
+      res.send({ success: true, t: total, body: rs, token: req.token })
     })
     .catch(e => {
       res.send({ success: false, msg: e.message })
@@ -45,9 +45,12 @@ router.get('/list/:_board', (req, res, next) => {
 router.get('/read/:_id', (req, res, next) => {
   const _id = req.params._id
 
-  Article.findById(_id).select('content')
+  let atc = {}
+
+  Article.findByIdAndUpdate(_id, { $inc: { 'cnt.view': 1 } }, { new: true }).lean()
     .then(r => {
-      res.send({ success: true, d: r, token: req.token })
+
+      res.send({ success: true, body: r, token: req.token })
     })
     .catch(e => {
       res.send({ success: false, msg: e.message })
@@ -57,7 +60,7 @@ router.get('/read/:_id', (req, res, next) => {
 router.post('/:_board', (req, res, next) => {
   const _board = req.params._board
   if (!_board) return res.send({ success: false, msg: '게시판이 선택되지 않았습니다' }) // 나중에 400 bad request 처리 예제
-  const { title, content } = req.body
+  const { title, content, category, subTitle, tags } = req.body
   Board.findOne({ _id: _board })
     .then(r => {
       if (!r) return res.send({ success: false, msg: '잘못된 게시판입니다' })
@@ -65,15 +68,20 @@ router.post('/:_board', (req, res, next) => {
       const atc = {
         title,
         content,
+        category,
+        subTitle,
+        tags,
+        ip: '1.1.1.1', //req.ip
+        createDate: new Date().getTime(),
+        updateDate: new Date().getTime(),
         _board,
-        ip: '1.1.1.1',//req.ip,
         _user: null
       }
       if (req.user._id) atc._user = req.user._id
       return Article.create(atc)
     })
     .then(r => {
-      res.send({ success: true, d: r, token: req.token })
+      res.send({ success: true, body: r, token: req.token })
     })
     .catch(e => {
       res.send({ success: false, msg: e.message })
@@ -89,10 +97,12 @@ router.put('/:_id', (req, res, next) => {
     .then(r => {
       if (!r) throw new Error('게시물이 존재하지 않습니다')
       if (r._user.toString() !== req.user._id) throw new Error('본인이 작성한 게시물이 아닙니다')
+      const data = req.body;
+      data.updateDate = new Date().getTime()
       return Article.findOneAndUpdate({ _id }, { $set: req.body }, { new: true })
     })
     .then(r => {
-      res.send({ success: true, d: r, token: req.token })
+      res.send({ success: true, body: r, token: req.token })
     })
     .catch(e => {
       res.send({ success: false, msg: e.message })
@@ -117,7 +127,7 @@ router.delete('/:_id', (req, res, next) => {
       return Article.deleteOne({ _id })
     })
     .then(r => {
-      res.send({ success: true, d: r, token: req.token })
+      res.send({ success: true, body: r, token: req.token })
     })
     .catch(e => {
       res.send({ success: false, msg: e.message })

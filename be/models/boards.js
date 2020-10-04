@@ -7,7 +7,9 @@ const boardSchema = new mongoose.Schema({
   title: { type: String, default: '' },
   type: { type: String, default: '' },
   lv: { type: Number, default: 0 },
-  rmk: { type: String, default: '' }
+  rmk: { type: String, default: '' },
+  categories: { type: Array, default: ['Default'] },
+  tags: { type: Array, default: ['Default'] }
 })
 
 module.exports = mongoose.model('Board', boardSchema)

@@ -3,6 +3,8 @@ import Vuex from 'vuex'
 
 import auth from '@/store/stroeAuth'
 import manage from '@/store/stroeManage'
+import board from '@/store/stroeBoard'
+import article from '@/store/stroeAticle'
 
 Vue.use(Vuex)
 
@@ -26,6 +28,8 @@ export default new Vuex.Store({
   },
   modules: {
     auth,
-    manage
+    manage,
+    board,
+    article
   }
 })
