@@ -51,14 +51,14 @@
             <v-list-item-title>홈으로</v-list-item-title>
           </v-list-item>
           <template v-if="!$store.state.auth.token">
-            <v-list-item @click="$router.push('/sign/in')">
+            <v-list-item @click="$router.push('/signIn')">
               <v-list-item-title>로그인</v-list-item-title>
             </v-list-item>
-            <v-list-item @click="$router.push('/sign/up')">
+            <v-list-item @click="$router.push('/signUp')">
               <v-list-item-title>회원가입</v-list-item-title>
             </v-list-item>
           </template>
-          <v-list-item v-else @click="$router.push('/sign/out')">
+          <v-list-item v-else @click="$router.push('/signOut')">
             <v-list-item-title>로그아웃</v-list-item-title>
           </v-list-item>
         </v-list>

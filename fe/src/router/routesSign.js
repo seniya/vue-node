@@ -2,24 +2,24 @@ import ContainerLayout from '@/views/container/signContainer.vue'
 
 const children = [
   {
-    path: '/sign/up',
+    path: '/signUp',
     name: 'signUp',
-    component: () => import('@/views/sign/signPage.vue')
+    component: () => import('@/views/sign/upPage.vue')
   },
   {
-    path: '/sign/in',
+    path: '/signIn',
     name: 'signIn',
-    component: () => import('@/views/sign/signPage.vue')
+    component: () => import('@/views/sign/inPage.vue')
   },
   {
-    path: '/sign/out',
+    path: '/signOut',
     name: 'signOut',
     component: () => import('@/views/sign/outPage.vue')
   }
 ]
 
 export default {
-  path: '/sign',
+  path: '/',
   component: ContainerLayout,
   children: children
 }

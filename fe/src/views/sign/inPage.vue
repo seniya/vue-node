@@ -8,21 +8,16 @@
             <h2 class="active">Sign In</h2>
             <h2 class="inactive underlineHover" @click="changeType('signUp')">Sign Up </h2>
           </template>
-          <template v-if="type === 'signUp'">
-            <h2 class="inactive underlineHover" @click="changeType('signIn')">Sign In </h2>
-            <h2 class="active">Sign Up </h2>
-          </template>
 
           <!-- Login Form -->
           <template v-if="type === 'signIn'">
           <v-spacer class="mt-5"></v-spacer>
-            <form @submit="submitSignIn">
+            <form>
               <input type="text" class="fadeIn first" v-model="formIn.id" placeholder="login id">
               <input type="password" class="fadeIn second" v-model="formIn.pwd"  placeholder="password">
               <v-container>
                 <v-row>
                   <v-col cols="12" sm="12" md="12" lg="12">
-                    <!-- Remind Passowrd -->
                     <buttonLike
                     :value="formIn.remember"
                     label="remember 7 days"
@@ -31,39 +26,7 @@
                   </v-col>
                 </v-row>
               </v-container>
-              <input type="submit" class="fadeIn fourth" value="Log In">
-            </form>
-          </template>
-
-          <!-- Register Form -->
-          <template v-if="type === 'signUp'">
-          <v-spacer class="mt-5"></v-spacer>
-            <form @submit="checkRobot">
-              <input type="text" class="fadeIn second" v-model="formUp.id" placeholder="login id">
-              <input type="password" class="fadeIn second" v-model="formUp.pwd"  placeholder="password">
-              <input type="text" class="fadeIn second" v-model="formUp.name" placeholder="name">
-              <vue-recaptcha
-                ref="recaptcha"
-                :sitekey="$cfg.recaptchaSiteKey"
-                :loadRecaptchaScript="true"
-                size="invisible"
-                @verify="onVerify"
-                @expired="onExpired"
-              >
-              </vue-recaptcha>
-
-              <v-container>
-                <v-row>
-                  <v-col cols="12" sm="12" md="12" lg="12">
-                    <buttonLike
-                    :value="formUp.remember"
-                    label="remember 7 days"
-                    @change="changeRemember"
-                    class="ml-2"/>
-                  </v-col>
-                </v-row>
-              </v-container>
-              <input type="submit" class="fadeIn fourth" value="Log In">
+              <input type="button" class="fadeIn fourth" value="Log In" @click="submitSignIn">
             </form>
           </template>
 
@@ -79,12 +42,10 @@
 
 <script>
 import buttonLike from '@/components/buttonLike.vue'
-import VueRecaptcha from 'vue-recaptcha'
 
 export default {
   components: {
-    buttonLike,
-    VueRecaptcha
+    buttonLike
   },
   data () {
     return {
@@ -93,29 +54,16 @@ export default {
         pwd: '',
         remember: true
       },
-      formUp: {
-        id: '',
-        pwd: '',
-        name: '',
-        remember: true
-      },
-      type: ''
+      type: 'signIn'
     }
   },
-  created () {
-    console.log('signPage Create')
-    const currentUrl = window.location.pathname
-    if (currentUrl === '/sign/in') {
-      this.type = 'signIn'
-    } else {
-      this.type = 'signUp'
-    }
-  },
+  created () {},
   methods: {
     async submitSignIn (e) {
       e.preventDefault()
       try {
         const data = await this.$store.dispatch('auth/SIGN_IN', this.formIn)
+        console.log('submitSignIn data : ', data)
         if (!data.success) throw new Error(data.msg)
         this.$router.push('/')
       } catch (error) {
@@ -123,33 +71,11 @@ export default {
         this.$store.commit('pop', { msg: error.message, color: 'error' })
       }
     },
-    async submitSignUp () {
-      try {
-        const data = await this.$store.dispatch('auth/SIGN_UP', this.formUp)
-        if (!data.success) throw new Error(data.msg)
-        this.$router.push('/sign')
-      } catch (error) {
-        this.$store.commit('pop', { msg: error.message, color: 'error' })
-      }
-    },
     changeRemember (v) {
       this.formIn.remember = v
     },
     changeType (nType) {
-      this.type = nType
-    },
-    onVerify (r) {
-      this.formUp.response = r
-      this.$refs.recaptcha.reset()
-      this.submit()
-    },
-    onExpired () {
-      this.formUp.response = ''
-      this.$refs.recaptcha.reset()
-    },
-    checkRobot () {
-      if (this.formUp.response) this.submitSignUp()
-      else this.$refs.recaptcha.execute()
+      this.$router.push(nType)
     }
   }
 
@@ -325,6 +251,16 @@ export default {
     color: #cccccc;
   }
 
+  input:disabled,
+  input[disabled]{
+    border: 1px solid #999999;
+    background-color: #cccccc;
+    color: #666666;
+  }
+  input[disabled]:hover  {
+    background-color: #cccccc;
+  }
+
   /* ANIMATIONS */
 
   /* Simple CSS3 Fade-in-down Animation */
@@ -431,10 +367,6 @@ export default {
 
   *:focus {
       outline: none;
-  }
-
-  #icon {
-    width:60%;
   }
 
   * {

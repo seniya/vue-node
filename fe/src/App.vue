@@ -1,6 +1,8 @@
 <template>
   <div>
     <transition name="page">
+      <!-- <router-view></router-view>
+      <router-view :key="$route.fullPath"></router-view> -->
       <router-view :key="$route.fullPath"></router-view>
     </transition>
   </div>
