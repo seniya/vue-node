@@ -43,6 +43,11 @@
               ></editor>
           </v-card-text>
 
+          <v-card-text>
+            <input id="bin" type="file">
+            <v-btn @click="upload">전송</v-btn>
+          </v-card-text>
+
           <v-card-actions>
             <v-btn text color="primary" @click="moveList">
               <v-icon left>mdi-list-status</v-icon> List
@@ -73,6 +78,7 @@ export default {
         category: '',
         tags: ''
       },
+      files: [],
       options: {
         language: 'ko',
         hooks: {
@@ -113,6 +119,46 @@ export default {
     },
     moveList () {
       this.$router.push(`/board/${this.board.name}`)
+    },
+    async imageUpload (file) {
+      const fdata = new FormData()
+      fdata.append('title', 'editor_upload')
+      fdata.append('bin', file)
+
+      const image = 'http://localhost:3000/api/file/download'
+
+      try {
+        const data = await this.$store.dispatch('file/FILE_UPLOAD_DEFAULT', { fdata })
+        if (!data.success) throw new Error(data.msg)
+        // const path = data.body.path
+        this.$toast.success('성공')
+      } catch (error) {
+        this.$toast.error(error.message)
+      }
+
+      this.files.push(file)
+      return image
+    },
+
+    addImageBlobHook (blob, callback) {
+      this.imageUpload(blob)
+        .then(image => {
+          callback(image.url, 'img')
+        })
+        .catch(console.error)
+    },
+    async upload () {
+      const fdata = new FormData()
+      // fdata.append('user_id', 'user_id1234')
+      fdata.append('bin', document.getElementById('bin').files[0])
+
+      try {
+        const data = await this.$store.dispatch('file/FILE_UPLOAD_DEFAULT', { fdata })
+        if (!data.success) throw new Error(data.msg)
+        this.$toast.success(data.body)
+      } catch (error) {
+        this.$toast.error(error.message)
+      }
     }
   }
 

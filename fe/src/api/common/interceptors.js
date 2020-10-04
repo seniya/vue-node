@@ -15,7 +15,7 @@ export function setInterceptors (instance) {
 
   instance.interceptors.response.use(
     function (response) {
-      console.log(`${response.config.url}`, response)
+      // console.log(`${response.config.url}`, response)
       return response
     },
     function (error) {

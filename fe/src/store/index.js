@@ -5,6 +5,7 @@ import auth from '@/store/stroeAuth'
 import manage from '@/store/stroeManage'
 import board from '@/store/stroeBoard'
 import article from '@/store/stroeAticle'
+import file from '@/store/stroeFile'
 
 Vue.use(Vuex)
 
@@ -30,6 +31,7 @@ export default new Vuex.Store({
     auth,
     manage,
     board,
-    article
+    article,
+    file
   }
 })

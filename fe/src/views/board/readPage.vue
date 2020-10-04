@@ -59,12 +59,10 @@ export default {
   methods: {
     async readArticle (id) {
       const data = await this.$store.dispatch('article/ARTICLE_READ', { id })
-      console.log('readArticle : ', data)
       this.article = data.body
     },
     async removeArticle (id) {
       const data = await this.$store.dispatch('article/ARTICLE_REMOVE', { id })
-      console.log('removeArticle : ', data)
       this.article = data.body
     },
     onEditorLoad (v) {
