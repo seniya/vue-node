@@ -6,7 +6,7 @@ const sharp = require('sharp')
 const fs = require('fs')
 const moment = require('moment')
 const path = require('path');
-const File = require('../../models/files')
+const FileEntity = require('../../models/files')
 
 const multer = require('multer')
 
@@ -19,7 +19,12 @@ function strWeekOfMonth() {
   return nowDate.format('YYYY_MM_') + weekOfMonth(nowDate)
 }
 
-router.post('/', multer({ dest: `../upload/${strWeekOfMonth()}/` }).single('bin'), (req, res, next) => {
+router.post('/upload', multer({
+  dest: `../upload/${strWeekOfMonth()}/`,
+  limits: {
+    fileSize: 20 * 1000 * 1000
+  }
+}).single('bin'), (req, res, next) => {
   console.log(req.body)
   console.log(req.file)
 
@@ -45,12 +50,15 @@ router.post('/', multer({ dest: `../upload/${strWeekOfMonth()}/` }).single('bin'
     articleId: null,
     _user: null,
     title: '',
+    readAll: false,
+    useAble: false
   }
   if (req.user._id) fileItem._user = req.user._id
   if (req.body.title) fileItem.title = req.body.title
   if (req.body.articleId) fileItem.articleId = req.body.articleId
+  if (req.body.readAll) fileItem.readAll = req.body.readAll
 
-  File.create(fileItem)
+  FileEntity.create(fileItem)
     .then(r => {
       res.send({ success: true, body: r, token: req.token })
     })
@@ -88,20 +96,26 @@ router.post('/image/sharp', multer({ dest: `../upload/${strWeekOfMonth()}/` }).s
   })
 })
 
-// router.get('/download', (req, res, next) => {
-//   express.static(path.join(__dirname, "./public"))
-//   var file = fs.readFileSync(__dirname + '/upload-folder/dramaticpenguin.MOV', 'binary');
-
-//   res.setHeader('Content-Length', file.length);
-//   res.write(file, 'binary');
-//   res.end();
-// });
-
-// router.get("/download", express.static(path.join(__dirname, "../upload")));
-router.get("/download", (req, res) => {
-  res.type('png')
-  res.sendFile(path.join(__dirname, "../../../upload", '/2020_10_2', '/', '22efc6cc2891a24a238c36bbe1d9c199'));
-  // res.sendFile('../upload/2020_10_2/22efc6cc2891a24a238c36bbe1d9c199');
+router.get("/download/:_id", (req, res, next) => {
+  const _id = req.params._id
+  console.log('_id : ', _id);
+  FileEntity.findByIdAndUpdate(_id, { $inc: { 'cntDown': 1 } }, { new: true }).lean()
+    .then(r => {
+      const { originalname, mimetype, path: fpath } = r
+      const stream = fs.createReadStream(path.join(__dirname, '../../', fpath));
+      stream.on('open', function () {
+        res.setHeader('Content-disposition', 'inline; filename=' + originalname);
+        res.setHeader('Content-type', mimetype);
+        stream.pipe(res);
+      })
+      stream.on('error', function () {
+        res.setHeader('Content-Type', 'text/plain');
+        res.status(404).end('Not found');
+      })
+    })
+    .catch(e => {
+      res.send({ success: false, msg: e.message })
+    })
 });
 
 router.all('*', function (req, res, next) {

@@ -43,10 +43,10 @@
               ></editor>
           </v-card-text>
 
-          <v-card-text>
+          <!-- <v-card-text>
             <input id="bin" type="file">
             <v-btn @click="upload">전송</v-btn>
-          </v-card-text>
+          </v-card-text> -->
 
           <v-card-actions>
             <v-btn text color="primary" @click="moveList">
@@ -123,21 +123,19 @@ export default {
     async imageUpload (file) {
       const fdata = new FormData()
       fdata.append('title', 'editor_upload')
+      fdata.append('readAll', true)
       fdata.append('bin', file)
-
-      const image = 'http://localhost:3000/api/file/download'
-
       try {
         const data = await this.$store.dispatch('file/FILE_UPLOAD_DEFAULT', { fdata })
         if (!data.success) throw new Error(data.msg)
-        // const path = data.body.path
-        this.$toast.success('성공')
+        const apiRootPath = process.env.NODE_ENV !== 'production' ? 'http://localhost:3000/api' : '/api'
+        const image = data.body
+        image.url = `${apiRootPath}/download/${data.body._id}`
+        this.files.push(file)
+        return image
       } catch (error) {
         this.$toast.error(error.message)
       }
-
-      this.files.push(file)
-      return image
     },
 
     addImageBlobHook (blob, callback) {
@@ -147,6 +145,7 @@ export default {
         })
         .catch(console.error)
     },
+    // TEST
     async upload () {
       const fdata = new FormData()
       // fdata.append('user_id', 'user_id1234')

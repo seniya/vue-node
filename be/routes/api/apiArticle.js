@@ -97,8 +97,8 @@ router.put('/:_id', (req, res, next) => {
     .then(r => {
       if (!r) throw new Error('게시물이 존재하지 않습니다')
       if (r._user.toString() !== req.user._id) throw new Error('본인이 작성한 게시물이 아닙니다')
-      const data = req.body;
-      data.updateDate = new Date().getTime()
+      // const data = req.body;
+      req.body.updateDate = new Date().getTime()
       return Article.findOneAndUpdate({ _id }, { $set: req.body }, { new: true })
     })
     .then(r => {

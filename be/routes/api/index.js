@@ -8,6 +8,8 @@ const cfg = require('../../../config')
 router.use('/siteInfo', require('./apiSite.js'))
 router.use('/board', require('./apiBoard.js'))
 router.use('/sign', require('./apiSign.js'))
+router.use('/download', require('./apiDownload.js'))
+
 
 const verifyToken = (t) => {
   return new Promise((resolve, reject) => {
@@ -68,6 +70,7 @@ router.use('/pageAuth', require('./apiPage.js'))
 router.use('/article', require('./apiArticle.js'))
 router.use('/manage', require('./manage'))
 router.use('/file', require('./apiFile.js'))
+
 
 
 router.all('*', function (req, res, next) {
