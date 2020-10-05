@@ -30,10 +30,22 @@
             <v-btn text color="primary" @click="moveList">
               <v-icon left>mdi-list-status</v-icon> List
             </v-btn>
+            sss
             <v-spacer></v-spacer>
-            <v-btn text color="primary" @click="removeArticle(article.id)">
-              <v-icon left>mdi-trash-can</v-icon> Delete
-            </v-btn>
+
+            <dialogConfirm v-on="{ click: alertMsg }">
+              <!-- <template v-slot:activator="dailog">
+                <v-btn text color="primary" @click="removeArticle(article._id)">
+                  <v-icon left>mdi-trash-can</v-icon> Delete
+                </v-btn>
+              </template> -->
+              <!-- -->
+              <template slot="activator" slot-scope="{ on }">
+                <v-btn v-on="on" text color="primary" @click="removeArticle(article._id)">
+                  <v-icon left>mdi-trash-can</v-icon> Delete
+                </v-btn>
+              </template>
+            </dialogConfirm>
           </v-card-actions>
 
           <v-spacer class="mb-10"/>
@@ -45,25 +57,48 @@
 </template>
 
 <script>
+import dialogConfirm from '@/components/dialogConfirm.vue'
+// import displayTime from '@/components/displayTime.vue'
+
 export default {
+  components: {
+    dialogConfirm
+  },
   data () {
     return {
       boardName: this.$route.params.name,
       articleId: this.$route.params.articleid,
-      article: null
+      article: null,
+      dailog: false
     }
   },
   mounted () {
     this.readArticle(this.articleId)
   },
   methods: {
+    alertMsg () {
+      alert('dddd')
+    },
     async readArticle (id) {
-      const data = await this.$store.dispatch('article/ARTICLE_READ', { id })
-      this.article = data.body
+      try {
+        const data = await this.$store.dispatch('article/ARTICLE_READ', { id })
+        this.article = data.body
+      } catch (error) {
+        this.$toast.error(error.message)
+      }
     },
     async removeArticle (id) {
-      const data = await this.$store.dispatch('article/ARTICLE_REMOVE', { id })
-      this.article = data.body
+      try {
+        const data = await this.$store.dispatch('article/ARTICLE_REMOVE', { id })
+        if (data.success) {
+          this.$toast.success('삭제되었습니다.')
+          this.moveList()
+        } else {
+          throw new Error(data.msg)
+        }
+      } catch (error) {
+        this.$toast.error(error.message)
+      }
     },
     onEditorLoad (v) {
       const el = v.preview.el
