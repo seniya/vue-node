@@ -36,11 +36,15 @@
 
           <v-divider class="mx-4"></v-divider>
 
-          <v-card-text>
+          <!-- <v-card-text>
             <editor
               ref="editor" initialEditType="wysiwyg" height="500px" width="100%"
               :options="options"
               ></editor>
+          </v-card-text> -->
+
+          <v-card-text>
+            <editorTiptap :description="form.content" :menubar="true" :readOnly="false" />
           </v-card-text>
 
           <!-- <v-card-text>
@@ -67,7 +71,12 @@
 </template>
 
 <script>
+import editorTiptap from '@/components/editorTiptap.vue'
+
 export default {
+  components: {
+    editorTiptap
+  },
   data () {
     return {
       board: null,
@@ -81,6 +90,7 @@ export default {
       files: [],
       options: {
         language: 'ko',
+        // plugins: [[codeSyntaxHighlight, { hljs }], pluginColorSyntax],
         hooks: {
           addImageBlobHook: this.addImageBlobHook
         }
