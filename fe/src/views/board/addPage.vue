@@ -34,20 +34,19 @@
             </v-container>
           </v-card-text>
 
-          <v-divider class="mx-4"></v-divider>
+          <v-divider class="ma-4"></v-divider>
 
-          <!-- <v-card-text>
+          <!--  -->
+          <v-card-text>
             <editor
-              ref="editor" initialEditType="wysiwyg" height="500px" width="100%"
+              ref="editor" height="500px" width="100%"
               :options="options"
               ></editor>
-          </v-card-text> -->
-
-          <v-card-text>
-            <editorTiptap :description="form.content" :menubar="true" :readOnly="false" />
           </v-card-text>
-
-          <!-- <v-card-text>
+          <!-- <div class="px-10 ma-4 elevation-3">
+            <editorTiptap :description="form.content" :menubar="true" :readOnly="false" />
+          </div>
+           <v-card-text>
             <input id="bin" type="file">
             <v-btn @click="upload">전송</v-btn>
           </v-card-text> -->
@@ -71,12 +70,13 @@
 </template>
 
 <script>
-import editorTiptap from '@/components/editorTiptap.vue'
+import codeSyntaxHighlight from '@toast-ui/editor-plugin-code-syntax-highlight'
+import hljs from 'highlight.js'
+// import javascript from 'highlight.js/lib/languages/javascript'
+
+// hljs.registerLanguage('javascript', javascript)
 
 export default {
-  components: {
-    editorTiptap
-  },
   data () {
     return {
       board: null,
@@ -91,6 +91,8 @@ export default {
       options: {
         language: 'ko',
         // plugins: [[codeSyntaxHighlight, { hljs }], pluginColorSyntax],
+        plugins: [[codeSyntaxHighlight, { hljs }]],
+        initialEditType: 'markdown',
         hooks: {
           addImageBlobHook: this.addImageBlobHook
         }
@@ -111,7 +113,7 @@ export default {
       }
     },
     async addArticle () {
-      this.form.content = this.$refs.editor.invoke('getHtml')
+      this.form.content = this.$refs.editor.invoke('getMarkdown')
       if (!this.form.title) return this.$toast.error('제목을 입력하세요')
       if (!this.form.subTitle) return this.$toast.error('소제목을 입력하세요')
       if (!this.form.content) return this.$toast.error('내용을 입력하세요')

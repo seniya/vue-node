@@ -6,8 +6,10 @@ import LoadScript from 'vue-plugin-load-script'
 import VueRecaptcha from 'vue-recaptcha'
 import vuetify from './plugins/vuetify'
 import './plugins/moment'
+import './plugins/lodash'
 import './plugins/editor'
 import './error'
+import 'highlight.js/styles/androidstudio.css'
 
 import cfg from '../config'
 

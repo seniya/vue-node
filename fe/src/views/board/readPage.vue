@@ -70,6 +70,9 @@
 <script>
 import dialogConfirm from '@/components/dialogConfirm.vue'
 import { Disqus } from 'vue-disqus'
+import codeSyntaxHighlight from '@toast-ui/editor-plugin-code-syntax-highlight'
+import javascript from 'highlight.js/lib/languages/javascript'
+import hljs from 'highlight.js'
 
 export default {
   components: {
@@ -81,7 +84,16 @@ export default {
       boardName: this.$route.params.name,
       articleId: this.$route.params.articleid,
       article: null,
-      dailog: false
+      dailog: false,
+      options: {
+        language: 'ko',
+        // initialEditType: 'markdown',
+        // plugins: [[codeSyntaxHighlight, { hljs }], pluginColorSyntax],
+        plugins: [[codeSyntaxHighlight, { hljs }]],
+        hooks: {
+          addImageBlobHook: this.addImageBlobHook
+        }
+      }
     }
   },
   mounted () {
@@ -97,7 +109,7 @@ export default {
     async readArticle (id) {
       try {
         const data = await this.$store.dispatch('article/ARTICLE_READ', { id })
-        this.article = data.body
+        this.prepareData(data)
       } catch (error) {
         this.$toast.error(error.message)
       }
@@ -123,6 +135,36 @@ export default {
     },
     moveList () {
       this.$router.push(`/board/${this.boardName}`)
+    },
+    prepareData (data) {
+      const nData = this.$_.cloneDeep(data)
+      const { content } = nData.body
+      console.log('prepareData content: ', content)
+      const findVal1 = '```js'
+      const findVal2 = '```'
+
+      const startVal = content.indexOf(findVal1)
+      console.log('startVal : ', startVal)
+
+      // const nextContent = content.indexOf(findVal1, startVal)
+      // console.log('nextContent : ', nextContent)
+
+      const endVal = content.indexOf(findVal2, startVal + 1)
+      console.log('endVal : ', endVal)
+
+      const resultVal = content.substr(startVal + 7, endVal - 10)
+      // console.log('resultVal : ', resultVal)
+
+      hljs.registerLanguage('javascript', javascript)
+      const convertVal = hljs.highlight('javascript', resultVal)
+      console.log('convertVal : ', convertVal)
+
+      const convertValComplete = `<pre><code class="javascript hljs">${convertVal.value}</code></pre>`
+      console.log('convertValComplete : ', convertValComplete)
+
+      nData.body.content = convertValComplete
+
+      this.article = nData.body
     }
   }
 }
