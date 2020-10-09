@@ -5,6 +5,7 @@ const articleSchema = new mongoose.Schema({
   title: { type: String, default: '', index: true },
   subTitle: { type: String, default: '' },
   content: { type: String, default: '' },
+  contentHtml: { type: String, default: '' },
   category: { type: String, default: null },
   tags: [{ type: String, default: null }],
   createDate: { type: Number, default: 0 },

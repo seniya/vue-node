@@ -70,7 +70,7 @@ router.use('/pageAuth', require('./apiPage.js'))
 router.use('/article', require('./apiArticle.js'))
 router.use('/manage', require('./manage'))
 router.use('/file', require('./apiFile.js'))
-
+router.use('/link', require('./apiLink.js'))
 
 
 router.all('*', function (req, res, next) {

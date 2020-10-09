@@ -18,38 +18,21 @@
           <v-divider class="mx-4"></v-divider>
 
           <v-card-text>
-            <viewer
-              ref="viewer"
-              :initialValue="article.content"
-              @load="onEditorLoad"
-            ></viewer>
+            <div v-if="article" v-html="article.contentHtml" class="conetent-read"></div>
+            <EditorComponent v-if="false" :content="article.content" />
           </v-card-text>
 
           <v-card-actions>
-            <v-btn text color="primary" @click="moveList">
+            <v-btn text color="primary" @click="moveToList">
               <v-icon left>mdi-list-status</v-icon> List
             </v-btn>
-            sss
             <v-spacer></v-spacer>
-
-            <dialogConfirm v-on="{ click: alertMsg }">
-              <!-- <template v-slot:activator="dailog">
-                <v-btn text color="primary" @click="removeArticle(article._id)">
-                  <v-icon left>mdi-trash-can</v-icon> Delete
-                </v-btn>
-              </template> -->
-              <!-- -->
-              <template slot="activator" slot-scope="{ on }">
-                <v-btn
-                  v-on="on"
-                  text
-                  color="primary"
-                  @click="removeArticle(article._id)"
-                >
-                  <v-icon left>mdi-trash-can</v-icon> Delete
-                </v-btn>
-              </template>
-            </dialogConfirm>
+            <v-btn text color="primary" @click="moveToModify">
+              <v-icon left>mdi-pencil</v-icon> Edit
+            </v-btn>
+            <v-btn text color="primary" @click="deleteConfirm">
+              <v-icon left>mdi-trash-can</v-icon> delete
+            </v-btn>
           </v-card-actions>
 
           <v-spacer class="mb-10" />
@@ -59,8 +42,7 @@
     <v-row>
       <v-col>
         <div class="comments">
-          <Disqus shortname="shortname" @new-comment="newComment" />
-          sss
+          <Disqus shortname="shortname" @new-comment="newComment" /><!--  -->
         </div>
       </v-col>
     </v-row>
@@ -68,15 +50,13 @@
 </template>
 
 <script>
-import dialogConfirm from '@/components/dialogConfirm.vue'
 import { Disqus } from 'vue-disqus'
-import codeSyntaxHighlight from '@toast-ui/editor-plugin-code-syntax-highlight'
-import javascript from 'highlight.js/lib/languages/javascript'
-import hljs from 'highlight.js'
+import EventBus from '@/util/EventBus'
+import EditorComponent from '@/views/board/component/editorComponent.vue'
 
 export default {
   components: {
-    dialogConfirm,
+    EditorComponent,
     Disqus
   },
   data () {
@@ -84,24 +64,21 @@ export default {
       boardName: this.$route.params.name,
       articleId: this.$route.params.articleid,
       article: null,
-      dailog: false,
-      options: {
-        language: 'ko',
-        // initialEditType: 'markdown',
-        // plugins: [[codeSyntaxHighlight, { hljs }], pluginColorSyntax],
-        plugins: [[codeSyntaxHighlight, { hljs }]],
-        hooks: {
-          addImageBlobHook: this.addImageBlobHook
-        }
-      }
+      editor: null
     }
   },
   mounted () {
     this.readArticle(this.articleId)
   },
   methods: {
-    alertMsg () {
-      alert('dddd')
+    deleteConfirm () {
+      console.log('deleteConfirm')
+      EventBus.$emit('start:alertDialog', {
+        title: '',
+        text: '삭제하시겠습니까?',
+        type: 2,
+        confirmEvent: this.removeArticle
+      })
     },
     newComment ({ id, text }) {
       console.log('newComment id, text', id, text)
@@ -109,19 +86,21 @@ export default {
     async readArticle (id) {
       try {
         const data = await this.$store.dispatch('article/ARTICLE_READ', { id })
-        this.prepareData(data)
+        setTimeout(() => {
+          this.article = data.body
+        }, 0)
       } catch (error) {
         this.$toast.error(error.message)
       }
     },
-    async removeArticle (id) {
+    async removeArticle () {
       try {
         const data = await this.$store.dispatch('article/ARTICLE_REMOVE', {
-          id
+          id: this.articleId
         })
         if (data.success) {
           this.$toast.success('삭제되었습니다.')
-          this.moveList()
+          this.moveToList()
         } else {
           throw new Error(data.msg)
         }
@@ -129,46 +108,27 @@ export default {
         this.$toast.error(error.message)
       }
     },
-    onEditorLoad (v) {
-      const el = v.preview.el
-      console.log('onEditorLoad el : ', el)
-    },
-    moveList () {
+    moveToList () {
       this.$router.push(`/board/${this.boardName}`)
     },
-    prepareData (data) {
-      const nData = this.$_.cloneDeep(data)
-      const { content } = nData.body
-      console.log('prepareData content: ', content)
-      const findVal1 = '```js'
-      const findVal2 = '```'
-
-      const startVal = content.indexOf(findVal1)
-      console.log('startVal : ', startVal)
-
-      // const nextContent = content.indexOf(findVal1, startVal)
-      // console.log('nextContent : ', nextContent)
-
-      const endVal = content.indexOf(findVal2, startVal + 1)
-      console.log('endVal : ', endVal)
-
-      const resultVal = content.substr(startVal + 7, endVal - 10)
-      // console.log('resultVal : ', resultVal)
-
-      hljs.registerLanguage('javascript', javascript)
-      const convertVal = hljs.highlight('javascript', resultVal)
-      console.log('convertVal : ', convertVal)
-
-      const convertValComplete = `<pre><code class="javascript hljs">${convertVal.value}</code></pre>`
-      console.log('convertValComplete : ', convertValComplete)
-
-      nData.body.content = convertValComplete
-
-      this.article = nData.body
+    moveToModify () {
+      this.$router.push(`/board/${this.boardName}/${this.articleId}/modify`)
     }
   }
+
 }
 </script>
 
-<style>
+<style lang="scss">
+  .conetent-read {
+    .ce-toolbar {
+      display: none !important;
+    }
+    .ce-inline-toolbar {
+      display: none !important;
+    }
+    .codex-editor-overlay {
+      display: none !important;
+    }
+  }
 </style>

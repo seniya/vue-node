@@ -66,24 +66,25 @@
     </v-app-bar>
 
     <v-main app>
-      <router-view />
+      <router-view></router-view>
     </v-main>
 
     <v-footer app >
       <span class="white--text">{{siteInfo.copyright}}</span>
     </v-footer>
-
-    <v-snackbar app v-model="$store.state.sb.act" :color="$store.state.sb.color">
-      {{ $store.state.sb.msg }}
-      <v-btn text @click="$store.commit('pop', { act: false })">닫기</v-btn>
-    </v-snackbar>
+    <AlertDialog :show="confirmShow" :object="confirmObj" v-on:close-alert="closeAlert"></AlertDialog>
   </v-app>
 </template>
 
 <script>
 import { getSiteMenu } from '@/util/common'
+import AlertDialog from '@/components/alertDialog.vue'
+import EventBus from '@/util/EventBus'
 
 export default {
+  components: {
+    AlertDialog
+  },
   name: 'Main',
   data () {
     return {
@@ -93,13 +94,31 @@ export default {
         copyright: '',
         dark: '',
         title: ''
-      }
+      },
+      confirmShow: false,
+      confirmObj: {}
     }
   },
   mounted () {
     this.getSite()
   },
+  created () {
+    EventBus.$on('start:alertDialog', alertObj => {
+      this.showConfirmAlert(alertObj)
+    })
+  },
+  beforeDestroy () {
+    EventBus.$off('start:alertDialog')
+  },
   methods: {
+    showConfirmAlert (alertObj) {
+      this.confirmObj = alertObj
+      this.confirmShow = true
+      console.log('showConfirmAlert')
+    },
+    closeAlert () {
+      this.confirmShow = false
+    },
     moveMain () {
       const currentUrl = window.location.pathname
       if (currentUrl !== '/') {

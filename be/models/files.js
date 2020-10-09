@@ -17,6 +17,8 @@ const fileSchema = new mongoose.Schema({
   readAll: { type: Boolean, default: false },
   useAble: { type: Boolean, default: false },
   ip: { type: String, default: '' },
+  url: { type: String, default: '' },
+  name: { type: String, default: '' },
   _user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', index: true, default: null },
 
   /*

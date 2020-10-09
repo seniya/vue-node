@@ -7,9 +7,10 @@ import VueRecaptcha from 'vue-recaptcha'
 import vuetify from './plugins/vuetify'
 import './plugins/moment'
 import './plugins/lodash'
-import './plugins/editor'
+// import './plugins/editor'
 import './error'
 import 'highlight.js/styles/androidstudio.css'
+import Editor from 'vue-editor-js'
 
 import cfg from '../config'
 
@@ -17,12 +18,11 @@ Vue.config.productionTip = false
 Vue.prototype.$cfg = cfg
 
 Vue.use(LoadScript)
+Vue.use(Editor)
 
 Vue.loadScript('https://www.google.com/recaptcha/api.js?onload=vueRecaptchaApiLoaded&render=explicit')
   .then(() => {
-    console.log('load VueRecaptcha 1')
     Vue.component('vue-recaptcha', VueRecaptcha)
-    console.log('load VueRecaptcha 2')
   })
   .catch((e) => {
     console.error(`google api load failed: ${e.message}`)

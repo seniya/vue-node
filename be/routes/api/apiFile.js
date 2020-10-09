@@ -24,7 +24,7 @@ router.post('/upload', multer({
   limits: {
     fileSize: 20 * 1000 * 1000
   }
-}).single('bin'), (req, res, next) => {
+}).single('file'), (req, res, next) => {
   console.log(req.body)
   console.log(req.file)
 
@@ -51,7 +51,7 @@ router.post('/upload', multer({
     _user: null,
     title: '',
     readAll: false,
-    useAble: false
+    useAble: true
   }
   if (req.user._id) fileItem._user = req.user._id
   if (req.body.title) fileItem.title = req.body.title
@@ -60,7 +60,64 @@ router.post('/upload', multer({
 
   FileEntity.create(fileItem)
     .then(r => {
+      r.url = process.env.NODE_ENV !== 'production' ? `http://localhost:3000/api/file/download/${r._id}` : `/api/file/download/${r._id}`
+      r.extension = r.originalname.split('.').pop() || 'undefined'
+      r.name = r.originalname
+      console.log('/upload r.extension : ', r.extension)
+      console.log('/upload r.name : ', r.name)
       res.send({ success: true, body: r, token: req.token })
+    })
+    .catch(e => {
+      res.send({ success: false, msg: e.message })
+    })
+})
+
+// editor.js attaches 모듈 전용
+router.post('/attache', multer({
+  dest: `../upload/${strWeekOfMonth()}/`,
+  limits: {
+    fileSize: 20 * 1000 * 1000
+  }
+}).single('file'), (req, res, next) => {
+  console.log(req.body)
+  console.log(req.file)
+
+  const {
+    originalname,
+    mimetype,
+    destination,
+    filename,
+    path,
+    size
+  } = req.file
+
+  const fileItem = {
+    originalname,
+    mimetype,
+    destination,
+    filename,
+    path,
+    size,
+    ip: '1.1.1.1', //req.ip
+    createDate: new Date().getTime(),
+    updateDate: new Date().getTime(),
+    articleId: null,
+    _user: null,
+    title: '',
+    readAll: true,
+    useAble: true
+  }
+  if (req.user._id) fileItem._user = req.user._id
+  if (req.body.title) fileItem.title = req.body.title
+  if (req.body.articleId) fileItem.articleId = req.body.articleId
+  if (req.body.readAll) fileItem.readAll = req.body.readAll
+
+  FileEntity.create(fileItem)
+    .then(r => {
+      r.url = process.env.NODE_ENV !== 'production' ? `http://localhost:3000/api/file/download/${r._id}` : `/api/file/download/${r._id}`
+      r.name = r.originalname
+      r.size = r.size + ''
+      res.send({ success: 1, file: r, token: req.token })
     })
     .catch(e => {
       res.send({ success: false, msg: e.message })

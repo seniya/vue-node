@@ -60,7 +60,7 @@ router.get('/read/:_id', (req, res, next) => {
 router.post('/:_board', (req, res, next) => {
   const _board = req.params._board
   if (!_board) return res.send({ success: false, msg: '게시판이 선택되지 않았습니다' }) // 나중에 400 bad request 처리 예제
-  const { title, content, category, subTitle, tags } = req.body
+  const { title, content, contentHtml, category, subTitle, tags } = req.body
   Board.findOne({ _id: _board })
     .then(r => {
       if (!r) return res.send({ success: false, msg: '잘못된 게시판입니다' })
@@ -68,6 +68,7 @@ router.post('/:_board', (req, res, next) => {
       const atc = {
         title,
         content,
+        contentHtml,
         category,
         subTitle,
         tags,

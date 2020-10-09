@@ -28,14 +28,20 @@ const children = [
   },
   {
     path: '/board/:name/add',
-    name: 'board',
+    name: 'ArticleAdd',
     component: () => import('@/views/board/addPage.vue'),
     beforeEnter: pageCheck
   },
   {
     path: '/board/:name/:articleid',
-    name: 'Article',
+    name: 'ArticleRead',
     component: () => import('@/views/board/readPage.vue'),
+    beforeEnter: pageCheck
+  },
+  {
+    path: '/board/:name/:articleid/modify',
+    name: 'ArticleModify',
+    component: () => import('@/views/board/modifyPage.vue'),
     beforeEnter: pageCheck
   },
   {
