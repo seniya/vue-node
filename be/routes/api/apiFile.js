@@ -4,11 +4,11 @@ const router = express.Router();
 const imgConvert = require('base64-img')
 const sharp = require('sharp')
 const fs = require('fs')
-const moment = require('moment')
 const path = require('path');
-const FileEntity = require('../../models/files')
+const moment = require('moment');
+const FileEntity = require('../../models/files');
 
-const multer = require('multer')
+const multer = require('multer');
 
 function weekOfMonth(m) {
   return m.week() - moment(m).startOf('month').week() + 1
@@ -18,14 +18,14 @@ function strWeekOfMonth() {
   const nowDate = moment(new Date())
   return nowDate.format('YYYY_MM_') + weekOfMonth(nowDate)
 }
-
+const dest = path.join(__dirname, '../../../upload/', strWeekOfMonth())
 router.post('/upload', multer({
-  dest: `../upload/${strWeekOfMonth()}/`,
+  dest: dest,
   limits: {
     fileSize: 20 * 1000 * 1000
   }
 }).single('file'), (req, res, next) => {
-  console.log(req.body)
+  console.log('dest : ', dest);
   console.log(req.file)
 
   const {
@@ -33,7 +33,7 @@ router.post('/upload', multer({
     mimetype,
     destination,
     filename,
-    path,
+    path: path_,
     size
   } = req.file
 
@@ -42,7 +42,7 @@ router.post('/upload', multer({
     mimetype,
     destination,
     filename,
-    path,
+    path: path_,
     size,
     ip: '1.1.1.1', //req.ip
     createDate: new Date().getTime(),
@@ -74,7 +74,7 @@ router.post('/upload', multer({
 
 // editor.js attaches 모듈 전용
 router.post('/attache', multer({
-  dest: `../upload/${strWeekOfMonth()}/`,
+  dest: dest,
   limits: {
     fileSize: 20 * 1000 * 1000
   }
@@ -124,6 +124,31 @@ router.post('/attache', multer({
     })
 })
 
+router.get("/download/:_id", (req, res, next) => {
+  const _id = req.params._id
+  console.log('_id : ', _id);
+  FileEntity.findByIdAndUpdate(_id, { $inc: { 'cntDown': 1 } }, { new: true }).lean()
+    .then(r => {
+      const { originalname, mimetype, path: fpath } = r
+      const dest_ = path.join(__dirname, '../../', fpath)
+      console.log('dest_ : ', dest_);
+      const stream = fs.createReadStream(fpath);
+      stream.on('open', function () {
+        res.setHeader('Content-disposition', 'inline; filename=' + originalname);
+        res.setHeader('Content-type', mimetype);
+        stream.pipe(res);
+      })
+      stream.on('error', function () {
+        res.setHeader('Content-Type', 'text/plain');
+        res.status(404).end('Not found');
+      })
+    })
+    .catch(e => {
+      res.send({ success: false, msg: e.message })
+    })
+});
+
+/*
 router.post('/image', multer({ dest: `../upload/${strWeekOfMonth()}/` }).single('bin'), (req, res, next) => {
   console.log(req.body)
   console.log(req.file)
@@ -152,28 +177,7 @@ router.post('/image/sharp', multer({ dest: `../upload/${strWeekOfMonth()}/` }).s
     })
   })
 })
-
-router.get("/download/:_id", (req, res, next) => {
-  const _id = req.params._id
-  console.log('_id : ', _id);
-  FileEntity.findByIdAndUpdate(_id, { $inc: { 'cntDown': 1 } }, { new: true }).lean()
-    .then(r => {
-      const { originalname, mimetype, path: fpath } = r
-      const stream = fs.createReadStream(path.join(__dirname, '../../', fpath));
-      stream.on('open', function () {
-        res.setHeader('Content-disposition', 'inline; filename=' + originalname);
-        res.setHeader('Content-type', mimetype);
-        stream.pipe(res);
-      })
-      stream.on('error', function () {
-        res.setHeader('Content-Type', 'text/plain');
-        res.status(404).end('Not found');
-      })
-    })
-    .catch(e => {
-      res.send({ success: false, msg: e.message })
-    })
-});
+*/
 
 router.all('*', function (req, res, next) {
   next(createError(404, 'siteInfo ... 그런 api 없어'));
