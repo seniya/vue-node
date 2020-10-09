@@ -4,30 +4,54 @@ const router = express.Router();
 const Board = require('../../models/boards')
 const Article = require('../../models/articles')
 
+const myCustomLabels = {
+  totalDocs: 'totalDocs',
+  docs: 'docs',
+  limit: 'itemsPerPage',
+  page: 'page',
+  nextPage: 'nextPage',
+  prevPage: 'prevPage',
+  totalPages: 'totalPages',
+  hasPrevPage: 'hasPrevPage',
+  hasNextPage: 'hasNextPage',
+  pagingCounter: 'pagingCounter'
+};
+
 router.get('/list/:_board', (req, res, next) => {
-  const _board = req.params._board
-  let { search, sort, order, skip, limit } = req.query
-  // console.log(req.query)
-  // console.log(sort && order && skip && limit)
-  // console.log(search & sort & order & skip & limit)
-  // if (!(sort && order && skip && limit)) return res.send({ success: false, msg: '잘못된 요청입니다' })
-  if (!search) search = ''
-  order = parseInt(order)
-  limit = parseInt(limit)
-  skip = parseInt(skip)
-  const s = {}
-  s[sort] = order
+  let { itemsPerPage, page, _board, sortBy, sortDesc } = req.query
+  let sort = {}
+
+  if (!itemsPerPage) itemsPerPage = 10
+  if (!page) page = 1
+  if (sortBy != undefined && sortDesc != undefined) {
+    if (sortBy.length > 0 && sortDesc.length > 0) {
+      const sortTarget = sortBy[0]
+      const sortOrder = sortDesc[0] === 'true' ? -1 : 1
+      sort[sortTarget] = sortOrder
+    }
+  } else {
+    sort = { updateDate: -1 }
+  }
+
+  console.log('sortBy : ', sortBy)
+  console.log('sortDesc : ', sortDesc)
+  console.log('sort : ', sort)
+
+  page = parseInt(page)
+  itemsPerPage = parseInt(itemsPerPage)
 
   const f = {}
+  let totalDocs = 0
   if (_board) f._board = _board
-  let total = 0
 
   Article.countDocuments(f)
-    .where('title').regex(search)
     .then(r => {
-      total = r
+      totalDocs = r
       return Article.find(f)
-        .where('title').regex(search)
+        .sort(sort)
+        .skip((page - 1) * itemsPerPage)
+        .limit(itemsPerPage)
+        // .where('title').regex(search)
         // .sort(s)
         // .skip(skip)
         // .limit(limit)
@@ -35,12 +59,122 @@ router.get('/list/:_board', (req, res, next) => {
         .populate('_user', '-pwd')
     })
     .then(rs => {
-      res.send({ success: true, t: total, body: rs, token: req.token })
+
+      const meta = {
+        itemsPerPage,
+        page,
+        totalDocs
+      }
+
+      const r = {
+        docs: rs,
+        meta
+      }
+
+      res.send({ success: true, body: r, token: req.token })
+      // res.send({ success: true, t: total, body: rs, token: req.token })
     })
     .catch(e => {
       res.send({ success: false, msg: e.message })
     })
 })
+
+/*
+router.get('/list/:_board', (req, res, next) => {
+
+  let { itemsPerPage, page, _board } = req.query
+  if (!itemsPerPage) itemsPerPage = 10
+  if (!page) page = 1
+
+  const f = {}
+  if (_board) f._board = _board
+
+  const options = {
+    page,
+    limit: itemsPerPage,
+    customLabels: myCustomLabels
+  }
+
+  const myAggregate = Article.aggregate();
+
+  Article.find(f).aggregatePaginate(myAggregate, options).then(function (results) {
+    // console.log(results);
+
+    const {
+      hasNextPage,
+      hasPrevPage,
+      itemsPerPage,
+      nextPage,
+      page,
+      pagingCounter,
+      prevPage,
+      totalDocs,
+      totalPages,
+      docs
+    } = results
+
+    const meta = {
+      hasNextPage,
+      hasPrevPage,
+      itemsPerPage,
+      nextPage,
+      page,
+      pagingCounter,
+      prevPage,
+      totalDocs,
+      totalPages
+    }
+
+    const r = {
+      docs,
+      meta
+    }
+
+    res.send({ success: true, body: r, token: req.token })
+  }).catch(function (err) {
+    console.log(err);
+  })
+  */
+
+/*
+const _board = req.params._board
+let { search, sort, order, skip, limit } = req.query
+// console.log(req.query)
+// console.log(sort && order && skip && limit)
+// console.log(search & sort & order & skip & limit)
+// if (!(sort && order && skip && limit)) return res.send({ success: false, msg: '잘못된 요청입니다' })
+if (!search) search = ''
+order = parseInt(order)
+limit = parseInt(limit)
+skip = parseInt(skip)
+const s = {}
+s[sort] = order
+
+const f = {}
+if (_board) f._board = _board
+let total = 0
+
+Article.countDocuments(f)
+  .where('title').regex(search)
+  .then(r => {
+    total = r
+    return Article.find(f)
+      .where('title').regex(search)
+      // .sort(s)
+      // .skip(skip)
+      // .limit(limit)
+      .select('-content')
+      .populate('_user', '-pwd')
+  })
+  .then(rs => {
+    res.send({ success: true, t: total, body: rs, token: req.token })
+  })
+  .catch(e => {
+    res.send({ success: false, msg: e.message })
+  })
+  
+})
+*/
 
 router.get('/read/:_id', (req, res, next) => {
   const _id = req.params._id

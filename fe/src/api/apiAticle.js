@@ -1,9 +1,10 @@
 import { instance } from './instance'
 
-function apiArticles (boardId) {
+function apiArticles (boardId, gdata) {
   return instance({
     method: 'GET',
-    url: `/article/list/${boardId}`
+    url: `/article/list/${boardId}`,
+    params: gdata
   })
 }
 function apiArticleAdd (boardId, fdata) {

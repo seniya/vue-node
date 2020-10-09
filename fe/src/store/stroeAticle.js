@@ -20,7 +20,7 @@ const mutations = {
 
 const actions = {
   async ARTICLE_ITEMS (context, payload) {
-    const { data } = await apiArticles(payload.id)
+    const { data } = await apiArticles(payload.id, payload.gdata)
     return data
   },
   async ARTICLE_ADD (context, payload) {

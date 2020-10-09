@@ -21,4 +21,5 @@ const articleSchema = new mongoose.Schema({
   _files: [{ type: mongoose.Schema.Types.ObjectId, ref: 'File', default: null }]
 })
 
+
 module.exports = mongoose.model('Article', articleSchema)
