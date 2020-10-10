@@ -42,7 +42,7 @@
     <v-row>
       <v-col>
         <div class="comments">
-          <Disqus shortname="shortname" @new-comment="newComment" /><!--  -->
+          <commentComponent />
         </div>
       </v-col>
     </v-row>
@@ -50,14 +50,15 @@
 </template>
 
 <script>
-import { Disqus } from 'vue-disqus'
+// import { Disqus } from 'vue-disqus'
 import EventBus from '@/util/EventBus'
 import EditorComponent from '@/views/board/component/editorComponent.vue'
+import commentComponent from '@/views/board/component/commentComponent.vue'
 
 export default {
   components: {
     EditorComponent,
-    Disqus
+    commentComponent
   },
   data () {
     return {
@@ -129,6 +130,11 @@ export default {
     }
     .codex-editor-overlay {
       display: none !important;
+    }
+  }
+  .comments {
+    .utterances {
+      max-width: 100% !important;
     }
   }
 </style>

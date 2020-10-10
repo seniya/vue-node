@@ -1,15 +1,14 @@
+import Vue from 'vue'
 import ContainerLayout from '@/views/container/mainContainerType1.vue'
-
 import store from '@/store'
 
 const pageCheck = async (to, from, next) => {
   try {
     const data = await store.dispatch('auth/PAGE_AUTH', { name: to.path.replace('/', '') })
-    // console.log('pageCheck data.success : ', data.success)
     if (!data.success) throw new Error(data.msg)
     next()
   } catch (error) {
-    if (!error.response) store.commit('pop', { msg: error.message, color: 'warning' })
+    Vue.prototype.$toast.error(error.message)
     next(false)
   }
 }
@@ -23,26 +22,26 @@ const children = [
   {
     path: '/board/:name',
     name: 'board',
-    component: () => import('@/views/board/index.vue'),
-    beforeEnter: pageCheck
+    component: () => import('@/views/board/index.vue')
+    // beforeEnter: pageCheck
   },
   {
     path: '/board/:name/add',
     name: 'ArticleAdd',
-    component: () => import('@/views/board/addPage.vue'),
-    beforeEnter: pageCheck
+    component: () => import('@/views/board/addPage.vue')
+    // beforeEnter: pageCheck
   },
   {
     path: '/board/:name/:articleid',
     name: 'ArticleRead',
-    component: () => import('@/views/board/readPage.vue'),
-    beforeEnter: pageCheck
+    component: () => import('@/views/board/readPage.vue')
+    // beforeEnter: pageCheck
   },
   {
     path: '/board/:name/:articleid/modify',
     name: 'ArticleModify',
-    component: () => import('@/views/board/modifyPage.vue'),
-    beforeEnter: pageCheck
+    component: () => import('@/views/board/modifyPage.vue')
+    // beforeEnter: pageCheck
   },
   {
     path: '/test/lv3',

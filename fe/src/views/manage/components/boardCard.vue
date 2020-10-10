@@ -6,7 +6,8 @@
       </v-card-title>
       <v-divider light></v-divider>
       <v-card-text>
-        <div>권한: {{board.lv}}</div>
+        <div>읽기 권한: {{board.readLv}}</div>
+        <div>쓰기 권한: {{board.createLv}}</div>
         <div>설명: {{board.rmk}}</div>
       </v-card-text>
 

@@ -39,9 +39,15 @@
               <v-flex xs12 sm6>
                 <v-select
                   :items="lvs"
-                  label="권한"
+                  label="읽기 권한"
                   required
-                  v-model="form.lv"
+                  v-model="form.readLv"
+                ></v-select>
+                <v-select
+                  :items="lvs"
+                  label="쓰기 권한"
+                  required
+                  v-model="form.createLv"
                 ></v-select>
               </v-flex>
             </v-layout>
@@ -74,7 +80,8 @@ export default {
       form: {
         name: '',
         rmk: '',
-        lv: 0
+        readLv: 0,
+        createLv: 0
       },
       selected: 0
     }
@@ -88,7 +95,8 @@ export default {
       this.form = {
         name: '',
         rmk: '',
-        lv: 0
+        readLv: 0,
+        createLv: 0
       }
     },
     async add () {

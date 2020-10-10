@@ -56,6 +56,7 @@ export default {
   components: { displayTime },
   data () {
     return {
+      paramBoardName: '',
       board: null,
       meta: {
         page: 1,
@@ -66,7 +67,8 @@ export default {
         mustSort: false,
         sortBy: [],
         sortDesc: [],
-        totalDocs: 0
+        totalDocs: 0,
+        paramBoardName: this.$route.params.name
       },
       articles: [],
       headerArray: [
@@ -88,33 +90,61 @@ export default {
         // console.log('meta handler : ', val)
         // console.log('meta page : ', oldVal.page, val.page)
         // console.log('meta itemsPerPage : ', oldVal.itemsPerPage, val.itemsPerPage)
-        if (
-          val.page !== oldVal.page ||
-          val.itemsPerPage !== oldVal.itemsPerPage ||
-          val.sortBy !== oldVal.sortBy ||
-          val.sortDesc !== oldVal.sortDesc) {
-          this.getArticles(val)
-          // console.log('meta ----action-------- ')
-        } else {
-          // console.log('meta ------------------- ')
+        if (val.paramBoardName === oldVal.paramBoardName) {
+          if (
+            val.page !== oldVal.page ||
+            val.itemsPerPage !== oldVal.itemsPerPage ||
+            val.sortBy !== oldVal.sortBy ||
+            val.sortDesc !== oldVal.sortDesc) {
+            this.getArticles(val)
+            // console.log('meta ----action-------- ')
+          } else {
+            // console.log('meta ------------------- ')
+          }
         }
+
         /* */
       },
       deep: true
+    },
+    '$route' (to, from) {
+      this.reloadPage(to)
     }
   },
   mounted () {
+    console.log('mounted')
+    this.paramBoardName = this.$route.params.name
     this.getBoard()
     this.isLoading = true
   },
   methods: {
+    reloadPage (route) {
+      this.meta = {
+        page: 1,
+        itemsPerPage: 10,
+        groupBy: [],
+        groupDesc: [],
+        multiSort: false,
+        mustSort: false,
+        sortBy: [],
+        sortDesc: [],
+        totalDocs: 0,
+        paramBoardName: route.params.name
+      }
+      this.paramBoardName = route.params.name
+      this.getBoard()
+    },
     async getBoard () {
       try {
-        const data = await this.$store.dispatch('board/BOARD_INFO', { id: this.$route.params.name })
-        if (!data.success) throw new Error(data.msg)
+        const data = await this.$store.dispatch('board/BOARD_INFO', { id: this.paramBoardName })
+        if (!data.success) {
+          this.articles = []
+          throw new Error(data.msg)
+        }
         this.board = data.body
         this.getArticles()
       } catch (error) {
+        this.articles = []
         this.$toast.error(error.message)
       }
     },
@@ -136,11 +166,11 @@ export default {
     },
 
     moveToAdd () {
-      this.$router.push(`/board/${this.$route.params.name}/add`)
+      this.$router.push(`/board/${this.paramBoardName}/add`)
     },
 
     moveToRead (atc) {
-      this.$router.push(`/board/${this.$route.params.name}/${atc._id}`)
+      this.$router.push(`/board/${this.paramBoardName}/${atc._id}`)
     }
   }
 }

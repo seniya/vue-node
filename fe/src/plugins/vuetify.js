@@ -44,7 +44,7 @@ Vue.use(VuetifyToast, {
   classes: [
     'body-2'
   ],
-  timeout: 3000, // default
+  timeout: 5000, // default
   dismissable: true, // default
   multiLine: false, // default
   vertical: false, // default

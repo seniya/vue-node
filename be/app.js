@@ -12,6 +12,7 @@ const history = require('connect-history-api-fallback')
 
 var app = express();
 
+
 if (process.env.NODE_ENV !== 'production') app.use(cors())
 app.use(logger('dev'));
 app.use(express.json());
