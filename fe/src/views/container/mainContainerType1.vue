@@ -1,38 +1,9 @@
 <template>
   <v-app app>
-    <v-navigation-drawer v-model="drawer" app>
-      <v-list>
-        <v-list-group
-        v-for="item in items"
-        :key="item.title"
-        v-model="item.active"
-        :prepend-icon="item.icon"
-        no-action
-        >
-          <template v-slot:activator>
-            <v-list-item-content>
-              <v-list-item-title v-text="item.title"></v-list-item-title>
-            </v-list-item-content>
-          </template>
-
-          <v-list-item
-            v-for="child in item.subItems"
-            :key="child.title"
-            :to="child.to"
-            :prepend-icon="child.icon"
-            link
-          >
-            <v-list-item-content >
-              <v-list-item-title v-text="child.title"></v-list-item-title>
-            </v-list-item-content>
-          </v-list-item>
-        </v-list-group>
-      </v-list>
-    </v-navigation-drawer>
 
     <v-app-bar app dense>
       <v-app-bar-nav-icon @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
-      <v-toolbar-title v-text="siteInfo.title"></v-toolbar-title>
+      <v-toolbar-title v-if="siteInfo" v-text="siteInfo.title"></v-toolbar-title>
       <v-spacer></v-spacer>
       <v-btn icon>
         <v-icon>mdi-heart</v-icon>
@@ -64,14 +35,40 @@
         </v-list>
       </v-menu>
     </v-app-bar>
+    <v-navigation-drawer v-model="drawer" app>
+      <v-list>
+        <v-list-group
+        v-for="item in items"
+        :key="item.title"
+        v-model="item.active"
+        :prepend-icon="item.icon"
+        no-action
+        >
+          <template v-slot:activator>
+            <v-list-item-content>
+              <v-list-item-title v-text="item.title"></v-list-item-title>
+            </v-list-item-content>
+          </template>
 
-    <v-main app>
-      <router-view></router-view>
+          <v-list-item
+            v-for="child in item.subItems"
+            :key="child.title"
+            :to="child.to"
+            :prepend-icon="child.icon"
+            link
+          >
+            <v-list-item-content >
+              <v-list-item-title v-text="child.title"></v-list-item-title>
+            </v-list-item-content>
+          </v-list-item>
+        </v-list-group>
+      </v-list>
+    </v-navigation-drawer>
+
+    <v-main app class="mb-10">
+      <router-view v-if="siteInfo"></router-view>
     </v-main>
 
-    <v-footer app >
-      <span class="white--text">{{siteInfo.copyright}}</span>
-    </v-footer>
     <AlertDialog :show="confirmShow" :object="confirmObj" v-on:close-alert="closeAlert"></AlertDialog>
   </v-app>
 </template>
@@ -90,11 +87,7 @@ export default {
     return {
       drawer: null,
       items: getSiteMenu(),
-      siteInfo: {
-        copyright: '',
-        dark: '',
-        title: ''
-      },
+      siteInfo: null,
       confirmShow: false,
       confirmObj: {}
     }
@@ -124,7 +117,7 @@ export default {
       if (currentUrl !== '/') {
         this.$router.push('/')
       } else {
-        this.$store.commit('pop', { msg: '지금 페이지야', color: 'warning' })
+        this.$toast.error('지금 페이지야')
       }
       console.log(currentUrl)
     },
@@ -132,7 +125,7 @@ export default {
       try {
         this.siteInfo = await this.$store.dispatch('auth/SITE_INFO')
       } catch (error) {
-        this.$store.commit('pop', { msg: error.message, color: 'warning' })
+        this.$toast.error(error.message)
       }
     }
   }

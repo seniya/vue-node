@@ -61,17 +61,34 @@ export default class CodeTool {
     const langVaule = this.nodes.selectList.value
     const highlightedCode = hljs.highlight(langVaule, textVaule).value
 
+    const codeEditor = document.createElement('div')
+    const control1 = document.createElement('span')
+    const control2 = document.createElement('span')
+    const control3 = document.createElement('span')
+
+    codeEditor.classList.add('code-editor', 'elevation-5')
+    control1.classList.add('control')
+    control2.classList.add('control')
+    control3.classList.add('control')
+
     const pre = document.createElement('pre')
-    pre.id = 'pre-highlight'
     const code = document.createElement('code')
     code.classList.add(langVaule, 'hljs')
     code.innerHTML = highlightedCode
 
+    codeEditor.content = langVaule
+
+    codeEditor.appendChild(control1)
+    codeEditor.appendChild(control2)
+    codeEditor.appendChild(control3)
+    codeEditor.appendChild(pre)
     pre.appendChild(code)
+
+    codeEditor.id = 'pre-highlight'
 
     const button = document.createElement('button')
     button.id = 'btn-highlight'
-    button.textContent = 'edit'
+    button.textContent = langVaule
     button.addEventListener('click', (event) => {
       this.drawView()
     })
@@ -81,9 +98,9 @@ export default class CodeTool {
     this.nodes.selectList.hidden = true
 
     this.nodes.bntEdit = button
-    this.nodes.highlight = pre
+    this.nodes.highlight = codeEditor
 
-    this.nodes.holder.appendChild(pre)
+    this.nodes.holder.appendChild(codeEditor)
 
     if (this.config.readOnly === false) {
       this.nodes.holder.appendChild(button)

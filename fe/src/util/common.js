@@ -2,11 +2,11 @@ function getSiteMenu () {
   return [
     {
       icon: 'mdi-view-dashboard',
-      title: '현황',
+      title: '홈',
       act: true,
       subItems: [
         {
-          title: '오늘',
+          title: '홈',
           to: {
             path: '/'
           }
@@ -15,7 +15,7 @@ function getSiteMenu () {
     },
     {
       icon: 'mdi-chat',
-      title: '끄적끄적',
+      title: '게시판',
       act: true,
       subItems: [
         {
@@ -30,6 +30,13 @@ function getSiteMenu () {
           title: 'test',
           to: {
             path: '/board/test'
+          }
+        },
+        {
+          icon: 'home',
+          title: '33 Javascript',
+          to: {
+            path: '/board/javascript33'
           }
         }
       ]

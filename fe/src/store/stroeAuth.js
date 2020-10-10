@@ -10,7 +10,8 @@ const state = {
   siteInfo: {
     copyright: '',
     dark: '',
-    title: ''
+    title: '',
+    listType: ''
   }
 }
 

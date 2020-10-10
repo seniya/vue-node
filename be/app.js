@@ -1,5 +1,6 @@
 const createError = require('http-errors');
 const express = require('express');
+const bodyParser = require('body-parser')
 const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
@@ -10,8 +11,11 @@ const cfg = require('../config')
 var apiRouter = require('./routes/api/index.js');
 const history = require('connect-history-api-fallback')
 
+
 var app = express();
 
+app.use(bodyParser.json({ limit: '50mb' }));
+app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
 
 if (process.env.NODE_ENV !== 'production') app.use(cors())
 app.use(logger('dev'));

@@ -108,19 +108,19 @@ export default {
         }
         const data = await this.$store.dispatch('manage/USER_UPDATE', { id: this.putId, data: fdata })
         if (!data.success) throw new Error(data.msg)
-        this.$store.commit('pop', { msg: '유저 수정 완료', color: 'success' })
+        this.$toast.success('유저 수정 완료')
         this.list()
       } catch (error) {
-        this.$store.commit('pop', { msg: error.message, color: 'error' })
+        this.$toast.error(error.message)
       }
     },
     async remove (id) {
       try {
         await this.$store.dispatch('manage/USER_REMOVE', { id })
-        this.$store.commit('pop', { msg: '유저 삭제 완료', color: 'success' })
+        this.$toast.success('유저 삭제 완료')
         this.list()
       } catch (error) {
-        this.$store.commit('pop', { msg: error.message, color: 'error' })
+        this.$toast.error(error.message)
       }
     },
     openDialog (user) {

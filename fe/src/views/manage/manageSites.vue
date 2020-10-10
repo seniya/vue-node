@@ -77,7 +77,8 @@ export default {
       dialog: false,
       siteTitle: '',
       siteCopyright: '',
-      siteDark: false
+      siteDark: false,
+      listType: 'list' || 'card'
     }
   },
   mounted () {
@@ -90,30 +91,33 @@ export default {
         console.log('list : ', data)
         this.items = data
       } catch (error) {
-        this.$store.commit('pop', { msg: error.message, color: 'warning' })
+        this.$toast.error(error.message)
       }
     },
     async update () {
       this.dialog = false
       try {
         const fdata = {
-          title: this.siteTitle, copyright: this.siteCopyright, dark: this.siteDark
+          title: this.siteTitle,
+          copyright: this.siteCopyright,
+          dark: this.siteDark,
+          listType: this.listType
         }
         const data = await this.$store.dispatch('manage/SITE_UPDATE', { id: this.putId, data: fdata })
         if (!data.success) throw new Error(data.msg)
-        this.$store.commit('pop', { msg: '사이트 수정 완료', color: 'success' })
+        this.$toast.success('설정 저장 완료')
         this.list()
       } catch (error) {
-        this.$store.commit('pop', { msg: error.message, color: 'error' })
+        this.$toast.error(error.message)
       }
     },
     async remove (id) {
       try {
         await this.$store.dispatch('manage/SITE_REMOVE', { id })
-        this.$store.commit('pop', { msg: '사이트 삭제 완료', color: 'success' })
+        this.$toast.success('설정 삭제 완료')
         this.list()
       } catch (error) {
-        this.$store.commit('pop', { msg: error.message, color: 'error' })
+        this.$toast.error(error.message)
       }
     },
     openDialog (site) {

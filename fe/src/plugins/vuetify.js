@@ -13,21 +13,29 @@ Vue.use(Vuetify, {
   }
 })
 const theme = {
+  // dark: true,
   themes: {
     light: {
-      primary: '#344059',
-      secondary: '#BFBFBF', // #FFCDD2
-      accent: '#2C4027',
-      info: '#4E7DA6'
-      // success: '#2C4027'
+      primary: '#1976D2',
+      secondary: '#424242',
+      accent: '#82B1FF',
+      error: '#FF5252',
+      info: '#2196F3',
+      success: '#4CAF50',
+      warning: '#FFC107'
+    },
+    dark: {
+      // primary: '#1976D2',
+      // secondary: '#424242',
+      // accent: '#82B1FF',
+      // error: '#FF5252',
+      // info: '#2196F3',
+      // success: '#4CAF50',
+      // warning: '#FFC107'
     }
-    // dark: {
-    //   primary: colors.brown.darken1, // #E53935
-    //   secondary: colors.deepPurple.lighten4, // #FFCDD2
-    //   accent: colors.indigo.base // #3F51B5
-    // }
   }
 }
+
 const VuetifyObj = new Vuetify({
   lang: {
     locales: { en, ko },

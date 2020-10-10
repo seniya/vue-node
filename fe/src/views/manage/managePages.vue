@@ -84,7 +84,7 @@ export default {
         const data = await this.$store.dispatch('manage/PAGE_INFO')
         this.items = data
       } catch (error) {
-        this.$store.commit('pop', { msg: error.message, color: 'warning' })
+        this.$toast.error(error.message)
       }
     },
     async update () {
@@ -96,19 +96,19 @@ export default {
         }
         const data = await this.$store.dispatch('manage/PAGE_UPDATE', { id: this.putId, data: fdata })
         if (!data.success) throw new Error(data.msg)
-        this.$store.commit('pop', { msg: '페이지 수정 완료', color: 'success' })
+        this.$toast.success('페이지 수정 완료')
         this.list()
       } catch (error) {
-        this.$store.commit('pop', { msg: error.message, color: 'error' })
+        this.$toast.error(error.message)
       }
     },
     async remove (id) {
       try {
         await this.$store.dispatch('manage/PAGE_REMOVE', { id })
-        this.$store.commit('pop', { msg: '페이지 삭제 완료', color: 'success' })
+        this.$toast.success('페이지 삭제 완료')
         this.list()
       } catch (error) {
-        this.$store.commit('pop', { msg: error.message, color: 'error' })
+        this.$toast.error(error.message)
       }
     },
     openDialog (page) {

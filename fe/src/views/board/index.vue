@@ -1,38 +1,27 @@
 <template>
   <v-container >
-    <v-row >
-      <v-col cols="12">
-        <v-data-table
-          v-if="meta"
-          :server-items-length="meta.totalDocs"
-          :options.sync="meta"
-          :headers="headerArray"
-          :items="articles"
-          :loading="isLoading"
-          item-key="_id"
-          class="elevation-1"
-          >
+    <v-toolbar dense class="elevation-3">
+      <v-toolbar-title v-if="board">{{board.name}}</v-toolbar-title>
+      <v-spacer></v-spacer>
+      <v-btn icon @click="changeListType('card')">
+        <v-icon>mdi-card-bulleted</v-icon>
+      </v-btn>
+      <v-btn icon @click="changeListType('list')">
+        <v-icon>mdi-format-list-bulleted</v-icon>
+      </v-btn>
+    </v-toolbar>
 
-          <template v-slot:body="{ items }">
-            <tbody>
-              <tr v-for="item in items" :key="item._id">
-                <td>{{ item.category }}</td>
-                <td>
-                  <a @click="moveToRead(item)">
-                    {{ item.title }}
-                  </a>
-                </td>
-                <td>{{ item.cnt.view }}</td>
-                <td>{{ item.cnt.like }}</td>
-                <td>{{ item._user.name || 'guest'}}</td>
-                <td><displayTime :time=" item.createDate" /></td>
-                <td><displayTime :time=" item.updateDate" /></td>
-              </tr>
-            </tbody>
-          </template>
-        </v-data-table>
-      </v-col>
-    </v-row>
+    <ListTable
+      v-if="siteInfo.listType === 'list' && board"
+      :paramBoardName="board.name"
+      :board="board"
+      :onMoveToRead="moveToRead" />
+
+    <CardTable
+      v-if="siteInfo.listType === 'card' && board"
+      :paramBoardName="board.name"
+      :board="board"
+      :onMoveToRead="moveToRead" />
 
     <v-btn
       color="pink"
@@ -50,89 +39,49 @@
   </v-container>
 </template>
 <script>
-import displayTime from '@/components/displayTime.vue'
+import ListTable from '@/views/board/component/listTable.vue'
+import CardTable from '@/views/board/component/cardTable.vue'
 
 export default {
-  components: { displayTime },
+  components: { ListTable, CardTable },
   data () {
     return {
-      paramBoardName: '',
+      paramBoardName: null,
       board: null,
-      meta: {
-        page: 1,
-        itemsPerPage: 10,
-        groupBy: [],
-        groupDesc: [],
-        multiSort: false,
-        mustSort: false,
-        sortBy: [],
-        sortDesc: [],
-        totalDocs: 0,
-        paramBoardName: this.$route.params.name
-      },
-      articles: [],
-      headerArray: [
-        { text: 'Category', value: 'category' },
-        { text: 'Title', value: 'title' },
-        { text: 'View', value: 'view' },
-        { text: 'Like', value: 'like' },
-        { text: 'User', value: '_user' },
-        { text: 'createDate', value: 'createDate' },
-        { text: 'updateDate', value: 'updateDate' }
-      ],
-      isLoading: true
+      siteInfo: null
     }
   },
   watch: {
-    meta: {
-      handler (val, oldVal) {
-        if (oldVal === null) return
-        // console.log('meta handler : ', val)
-        // console.log('meta page : ', oldVal.page, val.page)
-        // console.log('meta itemsPerPage : ', oldVal.itemsPerPage, val.itemsPerPage)
-        if (val.paramBoardName === oldVal.paramBoardName) {
-          if (
-            val.page !== oldVal.page ||
-            val.itemsPerPage !== oldVal.itemsPerPage ||
-            val.sortBy !== oldVal.sortBy ||
-            val.sortDesc !== oldVal.sortDesc) {
-            this.getArticles(val)
-            // console.log('meta ----action-------- ')
-          } else {
-            // console.log('meta ------------------- ')
-          }
-        }
-
-        /* */
-      },
-      deep: true
-    },
     '$route' (to, from) {
       this.reloadPage(to)
     }
   },
-  mounted () {
-    console.log('mounted')
+  created () {
     this.paramBoardName = this.$route.params.name
+    this.siteInfo = this.$store.getters['auth/getSiteInfo']
+    console.log('siteInfo : ', this.siteInfo)
     this.getBoard()
-    this.isLoading = true
   },
   methods: {
+    changeListType (type) {
+      this.siteInfo = this.$store.getters['auth/getSiteInfo']
+      this.siteInfo.listType = type
+      this.$store.dispatch('manage/SITE_INFO')
+      this.updateSiteInfo()
+    },
     reloadPage (route) {
-      this.meta = {
-        page: 1,
-        itemsPerPage: 10,
-        groupBy: [],
-        groupDesc: [],
-        multiSort: false,
-        mustSort: false,
-        sortBy: [],
-        sortDesc: [],
-        totalDocs: 0,
-        paramBoardName: route.params.name
-      }
       this.paramBoardName = route.params.name
       this.getBoard()
+    },
+    async updateSiteInfo () {
+      this.dialog = false
+      try {
+        const data = await this.$store.dispatch('manage/SITE_UPDATE', { id: this.siteInfo._id, data: this.siteInfo })
+        if (!data.success) throw new Error(data.msg)
+        this.$toast.success('설정 저장 완료')
+      } catch (error) {
+        this.$toast.error(error.message)
+      }
     },
     async getBoard () {
       try {
@@ -142,29 +91,11 @@ export default {
           throw new Error(data.msg)
         }
         this.board = data.body
-        this.getArticles()
       } catch (error) {
         this.articles = []
         this.$toast.error(error.message)
       }
     },
-    async getArticles () {
-      this.isLoading = true
-      try {
-        const data = await this.$store.dispatch('article/ARTICLE_ITEMS', { id: this.board._id, gdata: this.meta })
-        if (!data.success) throw new Error(data.msg)
-        console.log('getArticles : ', data)
-        this.articles = data.body.docs
-        this.meta.itemsPerPage = data.body.meta.itemsPerPage
-        this.meta.page = data.body.meta.page
-        this.meta.totalDocs = data.body.meta.totalDocs
-      } catch (error) {
-        this.$toast.error(error.message)
-      } finally {
-        this.isLoading = false
-      }
-    },
-
     moveToAdd () {
       this.$router.push(`/board/${this.paramBoardName}/add`)
     },

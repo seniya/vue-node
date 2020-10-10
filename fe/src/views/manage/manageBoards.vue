@@ -61,7 +61,7 @@
       </v-card>
     </v-dialog>
 
-    <v-btn elevation="6" absolute bottom right fab @click="addDialog" class="mb-2">
+    <v-btn elevation="6" absolute bottom right fab @click="addDialog">
       <v-icon>mdi-pencil</v-icon>
     </v-btn>
   </v-container>
@@ -106,7 +106,7 @@ export default {
         this.dialog = false
         this.list()
       } catch (error) {
-        this.$store.commit('pop', { msg: error.message, color: 'warning' })
+        this.$toast.error(error.message)
       }
     },
     async list () {
@@ -114,7 +114,7 @@ export default {
         const data = await this.$store.dispatch('manage/BOARD_INFO')
         this.items = data
       } catch (error) {
-        this.$store.commit('pop', { msg: error.message, color: 'warning' })
+        this.$toast.error(error.message)
       }
     }
   }

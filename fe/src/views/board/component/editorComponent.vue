@@ -1,5 +1,5 @@
 <template>
-  <div id="editorjs"></div>
+  <div id="editorjs" class="module-editorjs"></div>
   <!--<div><pre><code>{{content}}</code></pre></div>-->
 </template>
 
@@ -111,6 +111,30 @@ export default {
 }
 </script>
 
-<style>
+<style lang="scss">
 
+  .module-editorjs {
+    .codex-editor__redactor {
+      padding-bottom: 200px !important;
+    }
+    .ce-block__content {
+      max-width: 800px !important;
+    }
+    .ce-toolbar__content {
+      max-width: 800px !important;
+    }
+
+    .hljs {
+      color: #a9b7c6;
+      background: #282b2e;
+      display: block;
+      overflow-x: auto;
+      padding: 50px 15px 15px 15px;
+    }
+    #btn-highlight {
+      float: right;
+      margin-right: 25px;
+      font-size: 15px;
+    }
+  }
 </style>

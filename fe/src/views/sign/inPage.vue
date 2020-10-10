@@ -85,7 +85,6 @@ export default {
 <style lang="scss" scoped>
 
 .module {
-  @import url('https://fonts.googleapis.com/css?family=Poppins');
 
   /* BASIC */
   background-color: #56baed;
