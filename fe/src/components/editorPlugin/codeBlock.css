@@ -38,7 +38,8 @@
   -o-box-sizing: border-box;
   -webkit-box-sizing: border-box;
   margin: 40px auto 0 auto;  
-  width: 750px;
+  width: 100%;
+  max-width: 650px;
   text-align: left;
   background-color: #473431;
   border-radius: 0 0 5px 5px;
@@ -55,7 +56,8 @@
   color: #222;
   padding-top: 6px;
   text-align: center;
-  width: 750px; 
+  width: 100%; 
+  max-width: 650px;
   height: 30px;
   background-color: #cccccc;
 }

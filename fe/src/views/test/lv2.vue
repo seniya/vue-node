@@ -4,11 +4,18 @@
       <span class="control"></span>
       <span class="control"></span>
       <span class="control"></span>
-      <span class="control">javascript</span>
-
       <pre>
         <code class="language-css">
+let fn1 = function() {
+  console.log('fn1 실행');
+  fn2();
+}
 
+let fn2 = function() {
+  console.log('fn2 실행');
+}
+
+fn1();
         </code>
       </pre>
     </div>
@@ -24,9 +31,9 @@ export default {
 <style lang="scss" scoped>
 
 .module-higilight {
-  background: #e16a3f;
-  height: 600px;
+
   // padding-top: 100px;
+  padding: 50px;
 
   .code-editor:before,
   .code-editor:after,
@@ -46,12 +53,13 @@ export default {
   }
 
   .code-editor {
+    position: relative;
     box-sizing: border-box;
     -moz-box-sizing: border-box;
     -o-box-sizing: border-box;
     -webkit-box-sizing: border-box;
     margin: 40px auto 0 auto;
-    width: 750px;
+    width: 100%;
     text-align: left;
     background-color: #473431;
     border-radius: 0 0 5px 5px;
@@ -68,19 +76,14 @@ export default {
     color: #222;
     padding-top: 6px;
     text-align: center;
-    top: 25px;
-    width: 750px;
+    width: 100%;
     height: 30px;
     background-color: #cccccc;
-    border-radius: 5px 5px 0 0;
-    -moz-border-radius: 5px 5px 0 0;
-    -o-border-radius: 5px 5px 0 0;
-    -webkit-border-radius: 5px 5px 0 0;
   }
 
   .code-editor span.control:before {
     content: '';
-    top: 34px;
+    top: 10px;
     z-index: 2;
     padding: 6px;
     border-radius: 20px;
