@@ -118,10 +118,10 @@ export default {
       padding-bottom: 200px !important;
     }
     .ce-block__content {
-      max-width: 800px !important;
+      max-width: 90% !important;
     }
     .ce-toolbar__content {
-      max-width: 800px !important;
+      max-width: 90% !important;
     }
 
     .hljs {
