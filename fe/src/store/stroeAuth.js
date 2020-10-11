@@ -10,9 +10,9 @@ const state = {
   siteInfo: {
     copyright: '',
     dark: '',
-    title: '',
-    listType: ''
-  }
+    title: ''
+  },
+  listType: localStorage.getItem('LIST_TYPE')
 }
 
 const getters = {
@@ -21,6 +21,9 @@ const getters = {
   },
   getSiteInfo: state => {
     return state.siteInfo
+  },
+  getListType: state => {
+    return state.listType
   }
 }
 
@@ -30,6 +33,9 @@ const mutations = {
   },
   setSiteInfo (state, siteInfo) {
     state.siteInfo = siteInfo
+  },
+  setListType (state, listType) {
+    state.listType = listType
   }
 }
 
@@ -56,6 +62,11 @@ const actions = {
   async SIGN_OUT (context, payload) {
     localStorage.removeItem('token')
     context.commit('setToken', null)
+  },
+  CHANGE_LIST_TYPE (context, payload) {
+    localStorage.setItem('LIST_TYPE', payload)
+    context.commit('setListType', payload)
+    return payload
   }
 }
 

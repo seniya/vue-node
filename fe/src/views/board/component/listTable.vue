@@ -21,9 +21,7 @@
                 </a>
               </td>
               <td>{{ item.cnt.view }}</td>
-              <td>{{ item.cnt.like }}</td>
               <td>{{ item._user.name || 'guest'}}</td>
-              <td><displayTime :time=" item.createDate" /></td>
               <td><displayTime :time=" item.updateDate" /></td>
             </tr>
           </tbody>
@@ -53,7 +51,6 @@ export default {
     }
   },
   mounted () {
-    this.paramBoardName = this.$route.params.name
     this.getArticles()
     this.isLoading = true
   },
@@ -71,14 +68,13 @@ export default {
         totalDocs: 0,
         paramBoardName: this.paramBoardName
       },
+      boardId: this.board._id,
       articles: [],
       headerArray: [
         { text: 'Category', value: 'category' },
         { text: 'Title', value: 'title' },
         { text: 'View', value: 'view' },
-        { text: 'Like', value: 'like' },
         { text: 'User', value: '_user' },
-        { text: 'createDate', value: 'createDate' },
         { text: 'updateDate', value: 'updateDate' }
       ],
       isLoading: true
@@ -106,31 +102,12 @@ export default {
       },
       deep: true
     }
-    // '$route' (to, from) {
-    //   this.reloadPage(to)
-    // }
   },
   methods: {
-    reloadPage (route) {
-      this.meta = {
-        page: 1,
-        itemsPerPage: 10,
-        groupBy: [],
-        groupDesc: [],
-        multiSort: false,
-        mustSort: false,
-        sortBy: [],
-        sortDesc: [],
-        totalDocs: 0,
-        paramBoardName: route.params.name
-      }
-      this.paramBoardName = route.params.name
-      this.getBoard()
-    },
     async getArticles () {
       this.isLoading = true
       try {
-        const data = await this.$store.dispatch('article/ARTICLE_ITEMS', { id: this.board._id, gdata: this.meta })
+        const data = await this.$store.dispatch('article/ARTICLE_ITEMS', { id: this.boardId, gdata: this.meta })
         if (!data.success) throw new Error(data.msg)
         console.log('getArticles : ', data)
         this.articles = data.body.docs

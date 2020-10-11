@@ -1,5 +1,20 @@
 <template>
   <v-container>
+
+    <v-toolbar dense class="elevation-3">
+      <v-toolbar-title v-if="boardName">{{boardName}}</v-toolbar-title>
+      <v-spacer></v-spacer>
+      <v-btn icon @click="moveToList">
+        <v-icon >mdi-format-list-bulleted</v-icon>
+      </v-btn>
+      <v-btn icon class="ml-5" @click="moveToModify">
+        <v-icon >mdi-pencil</v-icon>
+      </v-btn>
+      <v-btn icon @click="deleteConfirm">
+        <v-icon >mdi-trash-can</v-icon>
+      </v-btn>
+    </v-toolbar>
+
     <v-row>
       <v-col cols="12">
         <v-card v-if="article">
@@ -46,11 +61,21 @@
         </div>
       </v-col>
     </v-row>
+    <v-btn
+      color="primary"
+      fixed
+      small
+      bottom
+      right
+      fab
+      @click="$vuetify.goTo(0)"
+    >
+      <v-icon>mdi-arrow-collapse-up</v-icon>
+    </v-btn>
   </v-container>
 </template>
 
 <script>
-// import { Disqus } from 'vue-disqus'
 import EventBus from '@/util/EventBus'
 import EditorComponent from '@/views/board/component/editorComponent.vue'
 import commentComponent from '@/views/board/component/commentComponent.vue'

@@ -1,9 +1,9 @@
 <template>
   <v-app app>
 
-    <v-app-bar app dense>
+    <v-app-bar app dense color="green">
       <v-app-bar-nav-icon @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
-      <v-toolbar-title v-if="siteInfo" v-text="siteInfo.title"></v-toolbar-title>
+      <v-toolbar-title v-if="siteInfo" v-text="siteInfo.title" @click="moveMain"></v-toolbar-title>
       <v-spacer></v-spacer>
       <v-btn icon>
         <v-icon>mdi-heart</v-icon>
@@ -36,6 +36,24 @@
       </v-menu>
     </v-app-bar>
     <v-navigation-drawer v-model="drawer" app>
+      <v-list-item>
+        <v-list-item-content>
+          <v-list-item-title class="title">
+            Hello
+          </v-list-item-title>
+          <v-list-item-subtitle>
+            World
+          </v-list-item-subtitle>
+        </v-list-item-content>
+        <v-list-item-action>
+          <v-btn icon @click.stop="drawer = !drawer">
+            <v-icon>mdi-close</v-icon>
+          </v-btn>
+        </v-list-item-action>
+      </v-list-item>
+
+      <v-divider></v-divider>
+
       <v-list>
         <v-list-group
         v-for="item in items"

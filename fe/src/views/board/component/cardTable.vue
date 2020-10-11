@@ -1,30 +1,43 @@
 <template>
+  <v-container >
   <v-row v-if="articles">
     <v-col
       v-for="(item, index) in articles"
       :key="index"
-      cols="4">
-      <v-card shaped @click="onMoveToRead(item)">
-        <v-card-title>{{ item.category }}</v-card-title>
-        <v-card-subtitle>
-          <div class="text-h6 text-truncate">{{ item.title }}</div>
-          <div class="text-subtitle-2">{{ item.subTitle }}</div>
-        </v-card-subtitle>
-        <v-card-text>
-          <div>
-            작성일 : <displayTime :time=" item.createDate" />
-          </div>
-          <div>
-            수정일 : <displayTime :time=" item.updateDate" />
-          </div>
-        </v-card-text>
-        <v-card-actions>
-          <v-spacer></v-spacer>
-          <v-icon class="mr-1">mdi-google-lens</v-icon>
-          <span class="subheading mr-2">{{ item.cnt.view }}</span>
-        </v-card-actions>
-      </v-card>
+      cols="12"
+      xs="12"
+      sm="6"
+      md="4">
+      <v-hover v-slot:default="{ hover }">
+
+        <v-card
+          :elevation="hover ? 12 : 2"
+          :class="{ 'on-hover': hover }"
+          @click="onMoveToRead(item)"
+        >
+          <v-card-title>{{ item.category }}</v-card-title>
+          <v-card-subtitle>
+            <div class="text-h6 text-truncate">{{ item.title }}</div>
+            <div class="text-subtitle-2">{{ item.subTitle }}</div>
+          </v-card-subtitle>
+          <v-card-text>
+            <div>
+              작성일 : <displayTime :time=" item.createDate" />
+            </div>
+            <div>
+              수정일 : <displayTime :time=" item.updateDate" />
+            </div>
+          </v-card-text>
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-icon class="mr-1">mdi-google-lens</v-icon>
+            <span class="subheading mr-2">{{ item.cnt.view }}</span>
+          </v-card-actions>
+        </v-card>
+      </v-hover>
     </v-col>
+  </v-row>
+  <v-row>
     <v-col cols="12" v-if="!isCompleted">
       <v-card v-intersect="onIntersect" class="elevation-0">
         <v-card-text class="d-flex justify-center">
@@ -37,6 +50,7 @@
       </v-card>
     </v-col>
   </v-row>
+  </v-container>
 </template>
 
 <script>
@@ -77,6 +91,7 @@ export default {
         totalDocs: 0,
         paramBoardName: this.paramBoardName
       },
+      boardId: this.board._id,
       articles: [],
       headerArray: [
         { text: 'Category', value: 'category' },
@@ -113,33 +128,14 @@ export default {
       },
       deep: true
     }
-    // '$route' (to, from) {
-    //   this.reloadPage(to)
-    // }
   },
   methods: {
-    reloadPage (route) {
-      this.meta = {
-        page: 1,
-        itemsPerPage: 15,
-        groupBy: [],
-        groupDesc: [],
-        multiSort: false,
-        mustSort: false,
-        sortBy: [],
-        sortDesc: [],
-        totalDocs: 0,
-        paramBoardName: route.params.name
-      }
-      this.paramBoardName = route.params.name
-      this.getBoard()
-    },
     async getArticles () {
       this.isLoading = true
       try {
-        const data = await this.$store.dispatch('article/ARTICLE_ITEMS', { id: this.board._id, gdata: this.meta })
+        const data = await this.$store.dispatch('article/ARTICLE_ITEMS', { id: this.boardId, gdata: this.meta })
         if (!data.success) throw new Error(data.msg)
-        console.log('getArticles : ', data)
+        // console.log('getArticles : ', data)
         // this.articles = data.body.docs
         const oladArticles = this.$_.cloneDeep(this.articles)
 
@@ -179,6 +175,11 @@ export default {
 }
 </script>
 
-<style>
-
+<style scoped>
+.v-card {
+  transition: opacity .2s ease-in-out;
+}
+.v-card:not(.on-hover) {
+  opacity: 0.8;
+}
 </style>

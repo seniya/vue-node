@@ -1,78 +1,44 @@
 function getSiteMenu () {
   return [
     {
-      icon: 'mdi-view-dashboard',
-      title: '홈',
-      act: true,
-      subItems: [
-        {
-          title: '홈',
-          to: {
-            path: '/'
-          }
-        }
-      ]
-    },
-    {
-      icon: 'mdi-chat',
+      icon: 'mdi-bulletin-board',
       title: '게시판',
       act: true,
       subItems: [
         {
-          icon: 'home',
           title: 'anyone',
-          to: {
-            path: '/board/anyone'
-          }
+          to: { path: '/board/anyone' }
         },
         {
-          icon: 'home',
           title: 'test',
-          to: {
-            path: '/board/test'
-          }
+          to: { path: '/board/test' }
         },
         {
-          icon: 'home',
           title: '33 Javascript',
-          to: {
-            path: '/board/javascript33'
-          }
+          to: { path: '/board/javascript33' }
         }
       ]
     },
     {
       icon: 'mdi-pen',
-      title: '레벨테스트',
+      title: '페이지테스트',
       act: true,
       subItems: [
         {
-          icon: 'mdi-home',
           title: '손님용 페이지',
-          to: {
-            path: '/test/lv3'
-          }
+          to: { path: '/test/lv3' }
         },
         {
-          icon: 'mdi-paw',
           title: '일반유저용 페이지',
-          to: {
-            path: '/test/lv2'
-          }
+          to: { path: '/test/lv2' }
         },
         {
-          icon: 'mdi-pan',
           title: '슈퍼유저용 페이지',
-          to: {
-            path: '/test/lv1'
-          }
+          to: { path: '/test/lv1' }
         },
         {
-          icon: 'mdi-parachute',
           title: '관리자용 페이지',
-          to: {
-            path: '/test/lv0'
-          }
+          to: { path: '/test/lv0' }
         }
       ]
     },
@@ -81,32 +47,20 @@ function getSiteMenu () {
       title: '관리메뉴',
       subItems: [
         {
-          icon: 'mdi-face',
           title: '사용자관리',
-          to: {
-            path: '/manage/users'
-          }
+          to: { path: '/manage/users' }
         },
         {
-          icon: 'mdi-book-open-page-variant',
           title: '페이지관리',
-          to: {
-            path: '/manage/pages'
-          }
+          to: { path: '/manage/pages' }
         },
         {
-          icon: 'mdi-sitemap',
           title: '사이트관리',
-          to: {
-            path: '/manage/sites'
-          }
+          to: { path: '/manage/sites' }
         },
         {
-          icon: 'mdi-bulletin-board',
           title: '게시판관리',
-          to: {
-            path: '/manage/boards'
-          }
+          to: { path: '/manage/boards' }
         }
       ]
     }
