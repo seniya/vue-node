@@ -245,7 +245,8 @@ export default {
       }
     },
     initSocket () {
-      this.socket = io('http://localhost:3000/study/simple-chat')
+      const ioUrl = process.env.NODE_ENV !== 'production' ? 'http://localhost:3000/study/simple-chat' : 'https://seniya2.iptime.org/study/simple-chat'
+      this.socket = io(ioUrl)
       this.socket.on('connect', () => {
         this.actionStoreClient()
         this.$toast.success('접속 되었습니다.')
