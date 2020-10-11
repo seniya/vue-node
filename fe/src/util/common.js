@@ -43,6 +43,17 @@ function getSiteMenu () {
       ]
     },
     {
+      icon: 'mdi-seat-individual-suite',
+      title: '게으름',
+      act: true,
+      subItems: [
+        {
+          title: '심플 쳇팅',
+          to: { path: '/study/chat-simple' }
+        }
+      ]
+    },
+    {
       icon: 'mdi-cogs',
       title: '관리메뉴',
       subItems: [

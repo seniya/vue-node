@@ -3,12 +3,14 @@ import VueRouter from 'vue-router'
 
 import routesMain from '@/router/routesMain'
 import routesSign from '@/router/routesSign'
+import routesStudy from '@/router/routesStudy'
 
 Vue.use(VueRouter)
 
 const routes = [
   routesMain,
   routesSign,
+  routesStudy,
   {
     path: '/test',
     name: 'test',

@@ -5,7 +5,6 @@ const siteSchema = new mongoose.Schema({
   title: { type: String, default: 'VUE-NODE', index: true },
   copyright: { type: String, default: '© 2020 vue-node' },
   dark: { type: Boolean, default: false }
-  // listType: { type: String, default: 'list' } // 'list' || 'card'
 })
 const Site = mongoose.model('Site', siteSchema)
 Site.findOne()

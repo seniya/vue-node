@@ -108,3 +108,6 @@ config/
 
 # upload
 upload/
+
+# upload
+upload_demo/
