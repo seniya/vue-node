@@ -271,7 +271,9 @@ export default {
       })
     },
     actionSetName () {
-      const name = this.myName // + Date.now()
+      const iname = this.myName + '' + Date.now()
+      const sliceRs = iname.slice(-5)
+      const name = this.myName + '_' + sliceRs
       this.myName = name
       this.dialog = false
       this.initSocket()
