@@ -96,6 +96,7 @@
                       no-resize
                       rows="3"
                       v-model="message"
+                      @keyup.enter.up="actionSendMessage"
                     ></v-textarea>
                   </v-card-text>
                   <v-card-actions class="chat-actions-block">
@@ -126,7 +127,7 @@
           이름을 설정하세요
         </v-card-title>
         <v-card-text>
-          어떤 정보도 저장되지 않습니다.
+          대화 기록이 서버 메모리에(휘발성) 저장됩니다.
         </v-card-text>
         <v-card-text>
           <v-text-field
@@ -152,6 +153,7 @@
 
 <script>
 import io from 'socket.io-client'
+import { openDB } from 'idb'
 import displayTime from '@/components/displayTime.vue'
 import { instance } from '@/api/instance'
 
@@ -163,16 +165,29 @@ function apiFileUpload (fdata) {
   })
 }
 
+function apiCheckName (fdata) {
+  return instance({
+    method: 'POST',
+    url: '/study/simple-chat/checkName',
+    data: fdata
+  })
+}
+
 export default {
   components: {
     displayTime
   },
   data () {
     return {
+      socket: null,
+      indexDb: null,
+      indexDbStore: null,
+      dbName: 'chat-normal',
+      dbTbName: 'anyoneChat',
+
       elem: null,
       dialog: true,
-      socket: null,
-      myName: 'anyName',
+      myName: '',
       message: '',
       avatar: null,
       imageFiles: [],
@@ -191,16 +206,6 @@ export default {
           avatar: 'https://cdn.vuetifyjs.com/images/lists/3.jpg',
           name: '영희',
           login: '1602423163050'
-        },
-        {
-          avatar: 'https://cdn.vuetifyjs.com/images/lists/4.jpg',
-          name: '친구1',
-          login: '1602423163050'
-        },
-        {
-          avatar: 'https://cdn.vuetifyjs.com/images/lists/5.jpg',
-          name: '친구2',
-          login: '1602423163050'
         }
       ],
       contents: [
@@ -209,18 +214,6 @@ export default {
           time: Date.now(),
           image: '',
           user: '콤퓨터'
-        },
-        {
-          text: '안녕하세요. 바른말 고운말 좋은 하루 보내요',
-          time: Date.now(),
-          image: '',
-          user: '콤퓨터2'
-        },
-        {
-          text: '안녕하세요. 바른말 고운말 좋은 하루 보내요',
-          time: Date.now(),
-          image: '',
-          user: '콤퓨터3'
         }
       ]
     }
@@ -231,29 +224,27 @@ export default {
     }
   },
   methods: {
-    nameClass: function (name) {
-      return {
-        'other-title': this.myName !== name,
-        'my-title': this.myName === name
-      }
+    async initApi () {
+      this.indexDb = await this.initIndexDb()
+      // console.log('initSocket this.indexDbStore : ', this.indexDbStore)
+      this.initSocket()
     },
-    contentsClass: function (name) {
-      return {
-        message: true,
-        'other-message': this.myName !== name,
-        'my-message': this.myName === name
-      }
+    async initIndexDb  () {
+      return await openDB(this.dbName, 1, {
+        upgrade: db => {
+          db.createObjectStore(this.dbTbName)
+        }
+      })
     },
-    initSocket () {
-      const ioUrl = process.env.NODE_ENV !== 'production' ? 'http://localhost:3000/study/simple-chat' : 'https://seniya2.iptime.org/study/simple-chat'
-      this.socket = io(ioUrl)
+
+    async initSocket () {
+      const ioUrl = process.env.NODE_ENV !== 'production' ? 'http://localhost:3000/study/normal-chat' : 'https://seniya2.iptime.org/study/normal-chat'
+      this.socket = io(ioUrl, { secure: true })
       this.socket.on('connect', () => {
-        this.actionStoreClient()
+        this.prepareContentsStep1()
         this.$toast.success('접속 되었습니다.')
       })
-      this.socket.on('resServerChat', (data) => {
-        this.actionsReceiveText(data)
-      })
+
       this.socket.on('resNewUser', (data) => {
         if (data.user !== this.myName) {
           this.$toast.success('새로운 유저 등장!')
@@ -270,13 +261,48 @@ export default {
         this.$toast.success('연결이 종료 되었습니다.')
       })
     },
-    actionSetName () {
-      const iname = this.myName + '' + Date.now()
-      const sliceRs = iname.slice(-5)
-      const name = this.myName + '_' + sliceRs
-      this.myName = name
+
+    async prepareContentsStep1 () {
+      this.socket.emit('reqAllContents', '어서')
+
+      this.socket.on('resAllContents', (data) => {
+        this.prepareContentsStep2(data)
+        // this.resAllContents(data)
+      })
+    },
+
+    async prepareContentsStep2 (oldContents) {
+      this.contents.push(...oldContents)
+
+      // const oldContents = await this.indexDb.getAll(this.dbTbName)
+      // console.log('prepareContents oldContents : ', oldContents)
+      // this.contents.push(...oldContents)
+      // this.elem = document.getElementById('scrolled-content')
+      // setTimeout(() => {
+      //   this.elem.scrollTop = 1000000
+      // }, 0)
+
+      this.prepareContentsStep3()
+    },
+
+    async prepareContentsStep3 () {
+      this.actionStoreClient()
+      this.socket.on('resServerChat', (data) => {
+        this.actionsReceiveText(data)
+      })
+    },
+
+    async actionSetName () {
+      // const iname = this.myName + '' + Date.now()
+      // const sliceRs = iname.slice(-5)
+      // const name = this.myName + '_' + sliceRs
+      // this.myName = name
+
+      const res = await apiCheckName({ user: this.myName })
+      console.log('actionSetName res : ', res)
+
       this.dialog = false
-      this.initSocket()
+      // this.initApi()
     },
     actionSendMessage () {
       if (this.message === null || this.message === '') {
@@ -284,6 +310,7 @@ export default {
         return
       }
       const content = {
+        id: Date.now(),
         text: this.message,
         time: Date.now(),
         image: '',
@@ -320,11 +347,13 @@ export default {
         avatar: this.avatar
       })
     },
-    actionsReceiveText (data) {
+    async actionsReceiveText (data) {
       console.log('actionsReceiveText data', data)
-      this.$vuetify.goTo(0)
-      this.contents.push(data)
+      console.log('actionsReceiveText this.indexDbStore', this.indexDbStore)
+      await this.indexDb.add(this.dbTbName, data, data.id)
+      // await this.indexDbStore.add(data, data.id)
 
+      this.contents.push(data)
       this.elem = document.getElementById('scrolled-content')
       setTimeout(() => {
         this.elem.scrollTop = 1000000
@@ -346,6 +375,20 @@ export default {
     actionOpenImage (url) {
       console.log('actionOpenImage : ', url)
       window.open(url, '_blank')
+    },
+
+    nameClass: function (name) {
+      return {
+        'other-title': this.myName !== name,
+        'my-title': this.myName === name
+      }
+    },
+    contentsClass: function (name) {
+      return {
+        message: true,
+        'other-message': this.myName !== name,
+        'my-message': this.myName === name
+      }
     }
 
   }
