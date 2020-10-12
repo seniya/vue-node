@@ -10,6 +10,11 @@ const children = [
     path: '/study/chat-normal',
     name: 'chatNormal',
     component: () => import('@/views/study/chatApp/chatNormal.vue')
+  },
+  {
+    path: '/study/chat-normal-test',
+    name: 'chatNormalTest',
+    component: () => import('@/views/study/chatApp/chatNormalTest.vue')
   }
 ]
 

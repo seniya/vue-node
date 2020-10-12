@@ -12,7 +12,7 @@ const state = {
     dark: '',
     title: ''
   },
-  listType: localStorage.getItem('LIST_TYPE')
+  listType: localStorage.getItem('LIST_TYPE') || 'list'
 }
 
 const getters = {

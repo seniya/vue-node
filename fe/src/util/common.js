@@ -16,6 +16,10 @@ function getSiteMenu () {
         {
           title: '33 Javascript',
           to: { path: '/board/javascript33' }
+        },
+        {
+          title: '개발이야기',
+          to: { path: '/board/devTalk' }
         }
       ]
     },
@@ -50,6 +54,14 @@ function getSiteMenu () {
         {
           title: '심플 쳇팅',
           to: { path: '/study/chat-simple' }
+        },
+        {
+          title: '노말 쳇팅',
+          to: { path: '/study/chat-normal' }
+        },
+        {
+          title: '테스트',
+          to: { path: '/study/chat-normal-test' }
         }
       ]
     },
