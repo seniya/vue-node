@@ -191,6 +191,16 @@ export default {
           avatar: 'https://cdn.vuetifyjs.com/images/lists/3.jpg',
           name: '영희',
           login: '1602423163050'
+        },
+        {
+          avatar: 'https://cdn.vuetifyjs.com/images/lists/4.jpg',
+          name: '친구1',
+          login: '1602423163050'
+        },
+        {
+          avatar: 'https://cdn.vuetifyjs.com/images/lists/5.jpg',
+          name: '친구2',
+          login: '1602423163050'
         }
       ],
       contents: [
@@ -199,6 +209,18 @@ export default {
           time: Date.now(),
           image: '',
           user: '콤퓨터'
+        },
+        {
+          text: '안녕하세요. 바른말 고운말 좋은 하루 보내요',
+          time: Date.now(),
+          image: '',
+          user: '콤퓨터2'
+        },
+        {
+          text: '안녕하세요. 바른말 고운말 좋은 하루 보내요',
+          time: Date.now(),
+          image: '',
+          user: '콤퓨터3'
         }
       ]
     }
