@@ -62,6 +62,10 @@ function getSiteMenu () {
         {
           title: '테스트',
           to: { path: '/study/chat-normal-test' }
+        },
+        {
+          title: '간단 그림판',
+          to: { path: '/study/paint-simple' }
         }
       ]
     },

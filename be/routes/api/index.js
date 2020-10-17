@@ -11,7 +11,7 @@ router.use('/sign', require('./apiSign.js'))
 router.use('/download', require('./apiDownload.js'))
 router.use('/demo', require('./apiDemo.js'))
 
-// router.use('/study', require('./apiSimpleChat.js'))
+router.use('/study', require('./study/apiSimplePaint'))
 
 
 const verifyToken = (t) => {

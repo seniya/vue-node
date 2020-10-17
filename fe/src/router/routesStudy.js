@@ -4,7 +4,7 @@ const children = [
   {
     path: '/study/chat-simple',
     name: 'chatSimple',
-    component: () => import('@/views/study/chatSimple.vue')
+    component: () => import('@/views/study/chatApp/chatSimple.vue')
   },
   {
     path: '/study/chat-normal',
@@ -15,6 +15,11 @@ const children = [
     path: '/study/chat-normal-test',
     name: 'chatNormalTest',
     component: () => import('@/views/study/chatApp/chatNormalTest.vue')
+  },
+  {
+    path: '/study/paint-simple',
+    name: 'paint',
+    component: () => import('@/views/study/paintApp/paintSimple.vue')
   }
 ]
 
