@@ -66,6 +66,14 @@ function getSiteMenu () {
         {
           title: '간단 그림판',
           to: { path: '/study/paint-simple' }
+        },
+        {
+          title: '그림 맞추기-입장',
+          to: { path: '/study/paint-game-ready' }
+        },
+        {
+          title: '그림 맞추기-게임',
+          to: { path: '/study/paint-game-in' }
         }
       ]
     },

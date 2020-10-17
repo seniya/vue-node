@@ -38,6 +38,11 @@ const NormalChat = require('./routes/api/study/apiNormalChat');
 const normalChat = new NormalChat(app, server);
 normalChat.registerOn();
 
+/*** Socket.IO 추가 : paint-game 전용 ***/
+const PaintChatGame = require('./routes/api/study/apiPaintGame');
+const paintChatGame = new PaintChatGame(app, server);
+paintChatGame.registerOn();
+
 
 app.use('/api', apiRouter);
 app.use(history())

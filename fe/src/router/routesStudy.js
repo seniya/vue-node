@@ -20,6 +20,16 @@ const children = [
     path: '/study/paint-simple',
     name: 'paint',
     component: () => import('@/views/study/paintApp/paintSimple.vue')
+  },
+  {
+    path: '/study/paint-game-ready',
+    name: 'paintGameReady',
+    component: () => import('@/views/study/paintGameApp/loungePage.vue')
+  },
+  {
+    path: '/study/paint-game-in',
+    name: 'paintGameIn',
+    component: () => import('@/views/study/paintGameApp/inGame.vue')
   }
 ]
 

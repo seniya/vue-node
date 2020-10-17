@@ -103,7 +103,7 @@ export default {
   name: 'Main',
   data () {
     return {
-      drawer: null,
+      drawer: false,
       items: getSiteMenu(),
       siteInfo: null,
       confirmShow: false,
