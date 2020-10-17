@@ -139,6 +139,12 @@
           <v-btn
             color="primary"
             text
+            @click="$router.push('/')">
+            나가기
+          </v-btn>
+          <v-btn
+            color="primary"
+            text
             :disabled="!myName"
             @click="actionSetName">
             입장

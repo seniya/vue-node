@@ -140,6 +140,12 @@
           <v-btn
             color="primary"
             text
+            @click="$router.push('/')">
+            나가기
+          </v-btn>
+          <v-btn
+            color="primary"
+            text
             :disabled="!myName"
             @click="actionSetName">
             입장
@@ -181,7 +187,6 @@ export default {
     return {
       socket: null,
       indexDb: null,
-      indexDbStore: null,
       dbName: 'chat-normal',
       dbTbName: 'anyoneChat',
 
@@ -225,7 +230,7 @@ export default {
   },
   methods: {
     async initApi () {
-      this.indexDb = await this.initIndexDb()
+      // this.indexDb = await this.initIndexDb()
       // console.log('initSocket this.indexDbStore : ', this.indexDbStore)
       this.initSocket()
     },
@@ -268,10 +273,12 @@ export default {
       this.socket.on('resAllContents', (data) => {
         this.prepareContentsStep2(data)
         // this.resAllContents(data)
+        this.socket.off('resAllContents')
       })
     },
 
     async prepareContentsStep2 (oldContents) {
+      console.log('prepareContentsStep2 oldContents : ', oldContents)
       this.contents.push(...oldContents)
 
       // const oldContents = await this.indexDb.getAll(this.dbTbName)
@@ -299,10 +306,15 @@ export default {
       // this.myName = name
 
       const res = await apiCheckName({ user: this.myName })
+      const { data } = res
       console.log('actionSetName res : ', res)
-
-      this.dialog = false
-      // this.initApi()
+      if (data.success) {
+        this.dialog = false
+        this.initApi()
+      } else {
+        this.myName = null
+        this.$toast.warning(data.msg)
+      }
     },
     actionSendMessage () {
       if (this.message === null || this.message === '') {
@@ -338,6 +350,7 @@ export default {
       }
     },
     actionStoreClient () {
+      console.log('---- actionStoreClient --- this.myName :', this.myName)
       let randomInt = parseInt(Math.random() * 10)
       if (randomInt === 0) randomInt = 1
       if (randomInt > 5) randomInt = 5
@@ -348,10 +361,9 @@ export default {
       })
     },
     async actionsReceiveText (data) {
-      console.log('actionsReceiveText data', data)
-      console.log('actionsReceiveText this.indexDbStore', this.indexDbStore)
-      await this.indexDb.add(this.dbTbName, data, data.id)
-      // await this.indexDbStore.add(data, data.id)
+      // console.log('actionsReceiveText data', data)
+      // console.log('actionsReceiveText this.indexDbStore', this.indexDbStore)
+      // await this.indexDb.add(this.dbTbName, data, data.id)
 
       this.contents.push(data)
       this.elem = document.getElementById('scrolled-content')
