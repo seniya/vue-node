@@ -1,8 +1,8 @@
 <template>
   <div class="module-paint-game-player">
-    <v-card width="420" height="350">
+    <v-card width="420" height="350" class="elevation-5" :class="classCardMain">
       <v-card-actions>
-        <span>{{`${user} (${role})`}}</span>
+        <span>{{`${player} (${role})`}}</span>
         <span v-if="myView">- 나</span>
         <v-spacer></v-spacer>
         <v-btn
@@ -14,34 +14,34 @@
           Start
         </v-btn>
       </v-card-actions>
-      <v-card-text
-        id="scrolled-content"
-        :class="classScrolledContents">
-        <v-list color="#F2F5F8">
-          <v-list-item :key="index" v-for="(item, index) in contents">
+      <v-card-text class="scrolled-content" :class="classScrolledContents">
+        <v-list class="content-list">
+          <v-list-item :key="index" v-for="(item, index) in contentsFilterd">
             <v-list-item-content>
-              <div :class="className(item.user)">
-                <span class="chat-user-login">
-                  <displayTime :time="item.date" type="normal" />
-                  &nbsp;&nbsp;
-                  <span class="chat-user-name">{{item.user}}</span>
-                  <v-icon dense small color="#94C2ED">mdi-circle</v-icon>
-                </span>
+              <div>
+                <div class="float-left contents-item-text">{{item.text}}</div>
               </div>
-              <div :class="classContents(item.user)">{{item.text}}</div>
+              <div>
+                <div class="float-right contents-item-time">
+                  <displayTime :time="item.date" type="clock" />
+                </div>
+              </div>
             </v-list-item-content>
           </v-list-item>
         </v-list>
       </v-card-text>
-      <v-text-field
-          v-if="myView"
-          flat
-          dense
-          outlined
-          v-model="message"
-          class="mt-5"
-        ></v-text-field>
-      <v-card-actions v-if="myView === true">
+      <div class="pl-5 pr-5 mt-5">
+        <v-text-field
+            v-if="myView"
+            flat
+            dense
+            outlined
+            v-model="message"
+            class=""
+            @keyup.enter="actionSendMessage"
+          ></v-text-field>
+      </div>
+      <v-card-actions v-if="myView === true" class="contents-actions-group">
         <v-btn text @click="actionExit">
           <v-icon left>mdi-exit-to-app</v-icon>
           Exit
@@ -57,19 +57,26 @@
 </template>
 
 <script>
+import displayTime from '@/components/displayTime.vue'
+
 export default {
   props: {
-    user: String, //  player-1, player-2, player-3, player-4
+    player: String, //  player-1, player-2, player-3, player-4
     myView: Boolean,
     onExit: Function,
     onStartTimer: Function,
-    running: Boolean
+    onSendMessage: Function,
+    running: Boolean,
+    contents: Array // {text, time, player}
+  },
+
+  components: {
+    displayTime
   },
 
   data () {
     return {
-      role: this.user === 'player-1' ? '진행자' : '참가자', // 진행자, 참가자
-      contents: [], // {user, text, date}
+      role: this.player === 'player-1' ? '진행자' : '참가자', // 진행자, 참가자
       message: ''
     }
   },
@@ -87,12 +94,60 @@ export default {
     },
     actionStartTimer () {
       this.onStartTimer()
+    },
+    actionSendMessage () {
+      console.log('actionSendMessage : ', this.message)
+      this.onSendMessage(this.message)
+      this.message = ''
     }
   },
 
   computed: {
+    classCardMain () {
+      return this.myView ? 'card-main-my' : 'card-main-other'
+    },
     classScrolledContents () {
       return this.myView ? 'scrolled-content-my' : 'scrolled-content-other'
+    },
+    contentsFilterd () {
+      // eslint-disable-next-line no-unused-vars
+      const sampleContents = [
+        { player: 'player-1', text: '1 안녕하세요 안녕하세요 안녕하세요 안녕하세요 안녕하세요 안녕하세요 55555 54333 안녕하세요 안녕하세요 안녕하세요 안녕하세요 55555 54333 안녕하세요 안녕하세요 안녕하세요 안녕하세요 55555 54333', time: 1603004149347 },
+        { player: 'player-1', text: '1ㅇㅁㄻㄴㄹ ㄴㅁㄻ ㄴㄴㅁㅇ ㄹㄴ ㄴ', time: 1603004149347 },
+        { player: 'player-1', text: '1ㅌㅊㅍㅌㅋㅊㅍㅋㅌㅊㅍㄴㅁㄹ ㅁㄴㅁㅇㄹ ㄴㅁㄹ ㅌㅍ', time: 1603004149347 },
+        { player: 'player-1', text: '1ㅁㄴㄹ ㄴㅁㄻㄴ ', time: 1603004149347 },
+        { player: 'player-1', text: '1ㅁㄴㄱ쇼됻ㄹㄴ ㅁㄴ ㄹㄴㅁㅇㄹ ㅁㄴㅇㄻㄴㄹ', time: 1603004149347 },
+        { player: 'player-1', text: '1ㅇ롱ㄹ ㅇ록ㄷㄷ교굗굑', time: 1603004149347 },
+        { player: 'player-1', text: '1ㅌㅋㅍ', time: 1603004149347 },
+        { player: 'player-1', text: '1호ㅓㄹ허ㅛ셕셕셗', time: 1603004149347 },
+        { player: 'player-2', text: '2화ㅓㅘ호ㅕㅑㅛ셠겨ㅛㄱ서', time: 1603004149347 },
+        { player: 'player-2', text: '2ㅌㅊㅍㅋㅌㅍㅌㅋㅍㄴㅇ', time: 1603004149347 },
+        { player: 'player-2', text: '2ddd', time: 1603004149347 },
+        { player: 'player-2', text: '265856 76 84455 56575', time: 1603004149347 },
+        { player: 'player-1', text: '1ㅁㄴㄱ쇼됻ㄹㄴ ㅁㄴ ㄹㄴㅁㅇㄹ ㅁㄴㅇㄻㄴㄹ', time: 1603004149347 },
+        { player: 'player-1', text: '1ㅇ롱ㄹ ㅇ록ㄷㄷ교굗굑', time: 1603004149347 },
+        { player: 'player-1', text: '1ㅌㅋㅍ', time: 1603004149347 },
+        { player: 'player-2', text: '2호ㅓㄹ허ㅛ셕셕셗', time: 1603004149347 },
+        { player: 'player-1', text: '1화ㅓㅘ호ㅕㅑㅛ셠겨ㅛㄱ서', time: 1603004149347 },
+        { player: 'player-1', text: '1ㅌㅊㅍㅋㅌㅍㅌㅋㅍㄴㅇ', time: 1603004149347 },
+        { player: 'player-1', text: '1ddd', time: 1603004149347 },
+        { player: 'player-1', text: '1615856 76 84455 56575', time: 1603004149347 },
+        { player: 'player-2', text: '2ㅁㄴㄱ쇼됻ㄹㄴ ㅁㄴ ㄹㄴㅁㅇㄹ ㅁㄴㅇㄻㄴㄹ', time: 1603004149347 },
+        { player: 'player-1', text: '1ㅇ롱ㄹ ㅇ록ㄷㄷ교굗굑', time: 1603004149347 },
+        { player: 'player-2', text: '2ㅌㅋㅍ', time: 1603004149347 },
+        { player: 'player-2', text: '2호ㅓㄹ허ㅛ셕셕셗', time: 1603004149347 },
+        { player: 'player-2', text: '2화ㅓㅘ호ㅕㅑㅛ셠겨ㅛㄱ서', time: 1603004149347 },
+        { player: 'player-2', text: '2ㅌㅊㅍㅋㅌㅍㅌㅋㅍㄴㅇ', time: 1603004149347 },
+        { player: 'player-2', text: '2ddd', time: 1603004149347 },
+        { player: 'player-1', text: '165856 76 84455 56575', time: 1603004149347 }
+      ]
+
+      // const returnValue = this.$_.filter(sampleContents, { player: this.player })
+      const returnValue = this.$_.filter(this.contents, { player: this.player })
+      console.log('returnValue : ', returnValue)
+
+      return returnValue
+      // return this.contents
     }
   },
 
@@ -100,6 +155,18 @@ export default {
     running (newValue, oldValue) {
       console.log('running newValue : ', newValue)
       console.log('running oldValue : ', oldValue)
+    },
+    contentsFilterd () {
+      const elements = document.getElementsByClassName('scrolled-content')
+      console.log('contentsFilterd elements : ', elements)
+      for (const element of elements) {
+        element.scrollTop = element.scrollHeight
+      }
+
+      // elements.map(function (key, index) {
+      //   elements[key].scrollTop = elements[key].scrollHeight
+      // })
+      // element.scrollTop = element.scrollHeight
     }
   }
 
@@ -109,16 +176,65 @@ export default {
 <style lang="scss" scoped>
 
   .module-paint-game-player {
+
+    // ::-webkit-scrollbar { display: none; }
+    ::-webkit-scrollbar {
+        width: 6px;
+        background: #fff;
+    }
+
+    ::-webkit-scrollbar-track {        display: none;    }
+
+    // #9b59b6 = rgb(155, 89, 182, 0.4);
+    // #3498db = rgb(52, 152, 219, 0.4);
+    // #2ecc71 = rgb(46, 204, 113, 0.4);
+    // #1abc9c = rgb(26, 188, 156, 0.4);
+    // #f1c40f = rgb(241, 196, 15, 0.4);
+    // #e67e22 = rgb(230, 126, 34, 0.4);
+    // #E73C61 = rgb(231, 60, 97, 0.4);
+
     position: relative;
 
+    .card-main-my {
+      background-color:rgb(52, 152, 219, 0.5);
+    }
+
+    .card-main-other {
+      background-color:rgb(26, 188, 156, 0.5);
+    }
+
     .scrolled-content-my {
-      min-height: 150px;
-      max-height: 150px
+      min-height: 190px;
+      max-height: 190px;
+      overflow-y: scroll;
+      background-color:transparent;
     }
     .scrolled-content-other {
-      min-height: 250px;
-      max-height: 250px
+      min-height: 290px;
+      max-height: 290px;
+      overflow-y: scroll;
+      background-color:transparent;
     }
+
+    .content-list {
+      background-color: transparent;
+    }
+
+    .contents-item-text {
+      background-color: #fff;
+      font-size: 1.0rem;
+      font-weight: 400;
+      padding: 7px;
+    }
+
+    .contents-item-time {
+      font-size: 0.5rem;
+    }
+
+    .contents-actions-group {
+      margin-top: -30px;
+    }
+
   }
 
 </style>

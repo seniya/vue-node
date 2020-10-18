@@ -54,16 +54,14 @@ class PaintChatGame {
       console.log('connection : ', socket.id)
 
       socket.on('reqStoreClient', data => {
-
         // console.log('reqStoreClient data : ', data)
-
         const clientInfo = new Object();
-        clientInfo.name = data.name;
+        clientInfo.player = data.player;
         clientInfo.login = Date.now();
         clientInfo.avatar = data.avatar
         clientInfo.clientId = socket.id;
         this.clients.push(clientInfo);
-        // console.log('reqStoreClient clients : ', this.clients.length);
+        console.log('reqStoreClient clients : ', this.clients.length);
         this.ioPaintChatGame.emit('resNewUser', this.clients);
       });
 
@@ -81,16 +79,14 @@ class PaintChatGame {
 
       socket.on('reqServerChat', async (data) => {
         this.saveDataCash(data)
-        // console.log('reqServerChat this.contents length : ', this.contents.length)
-
-        await this.saveDataDb(data)
-
+        console.log('reqServerChat data : ', data)
+        // await this.saveDataDb(data)
         this.ioPaintChatGame.emit('resServerChat', data);
       });
 
       socket.on('reqAllContents', async (data) => {
         // console.log('this.contents length : ', this.contents.length)
-        const oldContents = await this.getContents()
+        // const oldContents = await this.getContents()
         console.log('reqAllContents oldContents : ', oldContents);
         this.ioPaintChatGame.emit('resAllContents', oldContents);
       });
@@ -103,7 +99,8 @@ class PaintChatGame {
         let interval = null
         interval = setInterval(() => {
           result = (time_ / maxTime) * 100
-          if (time_ === 0) {
+          if (time_ < 1) {
+            this.ioPaintChatGame.emit('resTimer', 0);
             clearInterval(interval)
           } else {
             time_ -= 1

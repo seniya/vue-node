@@ -14,6 +14,8 @@ export default {
     displayTime () {
       if (this.type === 'normal') {
         return this.$moment(this.time).format('MM-DD HH:mm:ss')
+      } else if (this.type === 'clock') {
+        return this.$moment(this.time).format('HH:mm:ss')
       } else {
         const bt = this.$moment(this.time)
         const ct = this.$moment()
@@ -22,6 +24,7 @@ export default {
         return bt.fromNow()
       }
     },
+
     defaultTime () {
       return this.$moment(this.time).format('YYYY MMMM Do, HH:mm:ss')
     }
