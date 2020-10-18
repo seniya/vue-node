@@ -33,6 +33,9 @@
             :contents="contents"/>
         </v-col>
         <v-col cols="6">
+          <div class="ml-15 mr-15 mb-5">
+            <div>주제어 : {{keywordView}}</div>
+          </div>
           <div class="ml-15 mr-15">
             <v-progress-linear
               v-model="timer"
@@ -40,8 +43,11 @@
               height="25"
             ></v-progress-linear>
           </div>
-          <paintComponent></paintComponent>
-          <div>주제어</div>
+          <paintComponent
+            :onSaveImgData="actionsSaveImgData"
+            :player="player"
+            :imgData="imgData"
+            />
         </v-col>
         <v-col  cols="3">
           <playerComponent v-if="player === 'player-3'"
@@ -114,7 +120,9 @@ export default {
       players: [],
       avatar: null,
       gameInfo: null,
-      contents: []
+      contents: [],
+      imgData: [],
+      keyword: null
     }
   },
 
@@ -127,6 +135,22 @@ export default {
     clearInterval(this.interval)
     if (this.socket) {
       this.socket.close()
+    }
+  },
+
+  computed: {
+    keywordView () {
+      let returnVal = ''
+      if (this.keyword === null || this.keyword === '') {
+        returnVal = '준비중입니다. 진행자가 [START] 버튼을 누르면 나타납니다.'
+      } else {
+        if (this.player === 'player-1') {
+          returnVal = `${this.keyword} - 진행자만 보입니다.`
+        } else {
+          returnVal = `${this.keyword.length} 글자, 한글, 띄어쓰기 없습니다.`
+        }
+      }
+      return returnVal
     }
   },
 
@@ -165,8 +189,17 @@ export default {
       this.socket.on('resTimer', (data) => {
         this.actionTimer(data)
       })
+      this.socket.on('resKeyword', (data) => {
+        this.actionsReceiveKeyword(data)
+      })
       this.socket.on('resServerChat', (data) => {
         this.actionsReceiveText(data)
+      })
+      this.socket.on('resResetGame', (data) => {
+        this.actionsReceiveResetGame()
+      })
+      this.socket.on('resImgData', (data) => {
+        this.actionsReceiveImgData(data)
       })
       this.socket.on('disconnect', () => {
         this.$toast.success('연결이 종료 되었습니다.')
@@ -188,6 +221,9 @@ export default {
     async actionExit (player, gameInfo) {
       gameInfo.users.splice(player, 1)
       const { data } = await apiGameUpdate(gameInfo)
+      if (this.player === 'player-1') {
+        await this.actionsResetGame()
+      }
       this.loading.hide()
       if (!data.success) {
         this.$toast.error(data.msg)
@@ -200,6 +236,7 @@ export default {
     async actionStartTimer () {
       this.loading = this.$loading.show()
       try {
+        this.actionSetKeyword()
         const { data } = await apiGameInfo()
         data.body.running = true
         const { data: data2 } = await apiGameUpdate(data.body)
@@ -219,6 +256,49 @@ export default {
       } else {
         this.timer = time
       }
+    },
+
+    actionSetKeyword (type) {
+      if (type === 'reset') {
+        this.socket.emit('reqKeyword', '')
+      } else {
+        const keywords = this.gameInfo.keywords
+        const length = keywords.length
+        const randVal = Math.floor(Math.random() * (length - 0 + 1)) + 0
+        const keyword = keywords[randVal]
+        this.socket.emit('reqKeyword', keyword)
+      }
+    },
+
+    actionsReceiveKeyword (data) {
+      this.keyword = data
+    },
+
+    async actionsResetGame () {
+      try {
+        const { data } = await apiGameInfo()
+        data.body.running = false
+        data.body.image = ''
+        data.body.users = []
+        this.socket.emit('reqResetGame', data.body)
+      } catch (error) {
+        this.$toast.error(error.message)
+      }
+    },
+
+    actionsReceiveResetGame (data) {
+      this.$toast.error('게임 폭파!! 진쟁자에게 문의하세요.')
+      this.$router.push('/study/paint-game-ready')
+    },
+
+    actionsSaveImgData (data) {
+      // data {type, line}
+      this.socket.emit('reqImgData', data)
+    },
+
+    actionsReceiveImgData (data) {
+      console.log('actionsReceiveImgData :', data)
+      this.imgData = data
     },
 
     actionStoreClient () {
@@ -246,10 +326,6 @@ export default {
     async actionsReceiveText (data) {
       console.log('actionsReceiveText data', data)
       this.contents.push(data)
-      // this.elem = document.getElementById('scrolled-content')
-      // setTimeout(() => {
-      //   this.elem.scrollTop = 1000000
-      // }, 0)
     },
 
     async updateGameState () {
@@ -258,6 +334,7 @@ export default {
         const { data } = await apiGameInfo()
         data.body.running = false
         await apiGameUpdate(data.body)
+        this.actionSetKeyword('reset')
         EventBus.$emit('start:alertDialog', {
           title: '',
           text: '종료 되었습니다.',
@@ -277,6 +354,9 @@ export default {
         this.$toast.error(data.msg)
       } else {
         this.gameInfo = data.body
+        // if (this.player === 'player-1') {
+        //   this.actionSetKeyword()
+        // }
         this.loading.hide()
       }
       this.actionStoreClient()

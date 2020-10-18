@@ -6,7 +6,7 @@
         <span v-if="myView">- 나</span>
         <v-spacer></v-spacer>
         <v-btn
-          v-if="role === '진행자'"
+          v-if="role === '진행자' && myView === true"
           text
           :disabled="running"
           @click="actionStartTimer">
@@ -152,21 +152,12 @@ export default {
   },
 
   watch: {
-    running (newValue, oldValue) {
-      console.log('running newValue : ', newValue)
-      console.log('running oldValue : ', oldValue)
-    },
     contentsFilterd () {
       const elements = document.getElementsByClassName('scrolled-content')
       console.log('contentsFilterd elements : ', elements)
       for (const element of elements) {
         element.scrollTop = element.scrollHeight
       }
-
-      // elements.map(function (key, index) {
-      //   elements[key].scrollTop = elements[key].scrollHeight
-      // })
-      // element.scrollTop = element.scrollHeight
     }
   }
 

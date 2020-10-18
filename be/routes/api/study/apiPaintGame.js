@@ -7,11 +7,14 @@ class PaintChatGame {
 
   constructor(app, server) {
     this.app = app
-    this.server = server;
+    this.server = server
+    this.keyword = ''
     this.clients = []
     this.contents = []
-    this.io = require('socket.io')(server, { origins: '*:*' });
-    this.ioPaintChatGame = this.io.of('/study/paint-game');
+    this.imgData = []
+    this.io = require('socket.io')(server, { origins: '*:*' })
+    this.ioPaintChatGame = this.io.of('/study/paint-game')
+    this.interval = null
     // console.log('constructor clients : ', this.clients);
   }
 
@@ -42,7 +45,7 @@ class PaintChatGame {
           return PaintGame.findOne({ _id: req.body._id })
         })
         .then(r => {
-          res.send({ success: true, body: r, token: req.token })
+          res.send({ success: true, body: r })
         })
         .catch(e => {
           res.send({ success: false, msg: e.message })
@@ -84,6 +87,43 @@ class PaintChatGame {
         this.ioPaintChatGame.emit('resServerChat', data);
       });
 
+      socket.on('reqImgData', async (data) => {
+        if (data.type === 'draw') {
+          if (data.line !== null) {
+            this.imgData.push(data.line)
+          }
+        } else {
+          this.imgData = []
+        }
+        console.log('reqImgData data : ', data)
+        this.ioPaintChatGame.emit('resImgData', this.imgData);
+      });
+
+      socket.on('reqKeyword', async (data) => {
+        this.keyword = data
+        console.log('reqKeyword data : ', this.keyword)
+        this.ioPaintChatGame.emit('resKeyword', this.keyword);
+      });
+
+      socket.on('reqResetGame', async (paintGameObj) => {
+        this.keyword = ''
+        this.clients = []
+        this.contents = []
+        this.imgData = []
+        if (this.interval) {
+          clearInterval(this.interval)
+        }
+        PaintGame.updateOne({ _id: paintGameObj._id }, { $set: paintGameObj })
+          .then(r => {
+            console.log('reqResetGame')
+            this.ioPaintChatGame.emit('resResetGame', true)
+          })
+          .catch(e => {
+            console.error(e.message)
+            this.ioPaintChatGame.emit('resResetGame', true)
+          })
+      });
+
       socket.on('reqAllContents', async (data) => {
         // console.log('this.contents length : ', this.contents.length)
         // const oldContents = await this.getContents()
@@ -96,12 +136,12 @@ class PaintChatGame {
         const maxTime = data
         let time_ = data
         let result = 1
-        let interval = null
-        interval = setInterval(() => {
+
+        this.interval = setInterval(() => {
           result = (time_ / maxTime) * 100
           if (time_ < 1) {
             this.ioPaintChatGame.emit('resTimer', 0);
-            clearInterval(interval)
+            clearInterval(this.interval)
           } else {
             time_ -= 1
             this.ioPaintChatGame.emit('resTimer', result);

@@ -92,6 +92,12 @@ const width = 700
 const height = 500
 
 export default {
+  props: {
+    player: String, //  player-1, player-2, player-3, player-4
+    onSaveImgData: Function,
+    imgData: Array
+  },
+
   data () {
     return {
       paintContainer: null,
@@ -111,6 +117,33 @@ export default {
   mounted () {
     this.paintContainer = this.$refs.paintContainer.getNode()
     this.paintLayer = this.$refs.paintLayer.getNode()
+  },
+
+  watch: {
+    imgData (newValue, oldValue) {
+      if (this.player !== 'player-1') {
+        console.log('imgData watch 1 newValue : ', newValue)
+
+        const copyValue = this.$_.cloneDeep(newValue)
+        console.log('imgData watch 2 copyValue : ', copyValue)
+
+        if (copyValue.length > 0) {
+          const index = copyValue.length
+          console.log('imgData watch 2 index : ', index)
+          const lineObj = copyValue[index - 1]
+          // const newLine = new Konva.Line(lineObj)
+          console.log('imgData watch 3 lineObj : ', lineObj)
+
+          const newLine = new Konva.Line(lineObj)
+          this.paintLayer.add(newLine)
+
+          console.log('imgData watch 4 newLine : ', newLine)
+
+          // this.paintLayer.add(newLine)
+          this.paintLayer.batchDraw()
+        }
+      }
+    }
   },
 
   methods: {
@@ -176,6 +209,17 @@ export default {
       this.paintLayer.add(this.lastLine)
     },
     handleDrawEnd () {
+      if (this.lastLine !== null) {
+        const stringData = this.paintLayer.toJSON()
+        const drawingData = JSON.parse(stringData)
+        // console.log('handleDrawEnd drawingData.children : ', drawingData.children)
+
+        const imgObj = {
+          type: 'draw',
+          line: drawingData.children[drawingData.children.length - 1]
+        }
+        this.onSaveImgData(imgObj)
+      }
       this.isPaint = false
       this.lastLine = null
       // console.log('handleDrawEnd')
