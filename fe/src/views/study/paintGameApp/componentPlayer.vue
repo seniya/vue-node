@@ -1,6 +1,6 @@
 <template>
   <div class="module-paint-game-player">
-    <v-card width="420" height="350" class="elevation-5" :class="classCardMain">
+    <v-card width="380" height="350" class="elevation-5" :class="classCardMain">
       <v-card-actions>
         <span>{{`${player} (${role})`}}</span>
         <span v-if="myView">- 나</span>
@@ -46,11 +46,7 @@
           <v-icon left>mdi-exit-to-app</v-icon>
           Exit
         </v-btn>
-        <v-spacer></v-spacer>
-        <v-btn text @click="actionClear">
-          <v-icon left>mdi-cancel</v-icon>
-          Clear
-        </v-btn>
+        <!-- <v-spacer></v-spacer> -->
       </v-card-actions>
     </v-card>
   </div>
@@ -104,7 +100,17 @@ export default {
 
   computed: {
     classCardMain () {
-      return this.myView ? 'card-main-my' : 'card-main-other'
+      let className = ''
+      if (this.player === 'player-1') {
+        className = 'card-main-player-1'
+      } else if (this.player === 'player-2') {
+        className = 'card-main-player-2'
+      } else if (this.player === 'player-3') {
+        className = 'card-main-player-3'
+      } else if (this.player === 'player-4') {
+        className = 'card-main-player-4'
+      }
+      return className
     },
     classScrolledContents () {
       return this.myView ? 'scrolled-content-my' : 'scrolled-content-other'
@@ -169,6 +175,11 @@ export default {
   .module-paint-game-player {
 
     // ::-webkit-scrollbar { display: none; }
+    // background-image: url(https://images.unsplash.com/photo-1517021897933-0e0319cfbc28?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=400&fit=max&ixid=eyJhcHBfaWQiOjE0NTg5fQ);
+    // background-image: url(https://images.unsplash.com/photo-1533903345306-15d1c30952de?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=400&fit=max&ixid=eyJhcHBfaWQiOjE0NTg5fQ);
+    // background-image: url(https://images.unsplash.com/photo-1545243424-0ce743321e11?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=400&fit=max&ixid=eyJhcHBfaWQiOjE0NTg5fQ);
+    // background-image: url(https://images.unsplash.com/photo-1531306728370-e2ebd9d7bb99?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=400&fit=max&ixid=eyJhcHBfaWQiOjE0NTg5fQ);
+
     ::-webkit-scrollbar {
         width: 6px;
         background: #fff;
@@ -186,13 +197,37 @@ export default {
 
     position: relative;
 
-    .card-main-my {
-      background-color:rgb(52, 152, 219, 0.5);
+    span {
+      // color: white;
     }
 
-    .card-main-other {
-      background-color:rgb(26, 188, 156, 0.5);
+    .card-main-player-1 {
+      background-color: rgb(52, 152, 219, 0.3);
+      // background-size: cover;
+      // background-image: url(https://images.unsplash.com/photo-1517021897933-0e0319cfbc28?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=400&fit=max&ixid=eyJhcHBfaWQiOjE0NTg5fQ);
     }
+
+    .card-main-player-2 {
+      background-color: rgb(46, 204, 113, 0.3);
+      // background-size: cover;
+      // background-image: url(https://images.unsplash.com/photo-1533903345306-15d1c30952de?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=400&fit=max&ixid=eyJhcHBfaWQiOjE0NTg5fQ);
+    }
+
+    .card-main-player-3 {
+      background-color: rgb(241, 196, 15, 0.3);
+      // background-size: cover;
+      // background-image: url(https://images.unsplash.com/photo-1545243424-0ce743321e11?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=400&fit=max&ixid=eyJhcHBfaWQiOjE0NTg5fQ);
+    }
+
+    .card-main-player-4 {
+      background-color: rgb(230, 126, 34, 0.3);
+      // background-size: cover;
+      // background-image: url(https://images.unsplash.com/photo-1531306728370-e2ebd9d7bb99?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=400&fit=max&ixid=eyJhcHBfaWQiOjE0NTg5fQ);
+    }
+
+    // .card-main-other {
+    //   background-color:rgb(26, 188, 156, 0.5);
+    // }
 
     .scrolled-content-my {
       min-height: 190px;

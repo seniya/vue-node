@@ -44,9 +44,11 @@
             ></v-progress-linear>
           </div>
           <paintComponent
+            v-if="gameInfo && socket"
             :onSaveImgData="actionsSaveImgData"
             :player="player"
             :imgData="imgData"
+            :running="gameInfo.running"
             />
         </v-col>
         <v-col  cols="3">
@@ -187,7 +189,7 @@ export default {
         this.players = data
       })
       this.socket.on('resTimer', (data) => {
-        this.actionTimer(data)
+        this.actionsReceiveTimer(data)
       })
       this.socket.on('resKeyword', (data) => {
         this.actionsReceiveKeyword(data)
@@ -200,6 +202,12 @@ export default {
       })
       this.socket.on('resImgData', (data) => {
         this.actionsReceiveImgData(data)
+      })
+      this.socket.on('resResetTimer', (data) => {
+        this.actionsReceiveResetTimer(data)
+      })
+      this.socket.on('resGameWin', (data) => {
+        this.actionsReceiveGameWin(data)
       })
       this.socket.on('disconnect', () => {
         this.$toast.success('연결이 종료 되었습니다.')
@@ -239,9 +247,7 @@ export default {
         this.actionSetKeyword()
         const { data } = await apiGameInfo()
         data.body.running = true
-        const { data: data2 } = await apiGameUpdate(data.body)
-        console.log('apiGameUpdate data2 :', data2)
-        this.gameInfo = data2.body
+        await apiGameUpdate(data.body)
         this.socket.emit('reqTimer', this.maxTime)
       } catch (error) {
         this.$toast.error(error.message)
@@ -249,7 +255,19 @@ export default {
         this.loading.hide()
       }
     },
-    actionTimer (time) {
+
+    actionsReceiveTimer (time) {
+      this.gameInfo.running = true
+      if (time === 0) {
+        this.updateGameState()
+        this.timer = 100
+      } else {
+        this.timer = time
+      }
+    },
+
+    actionsReceiveResetTimer (time) {
+      this.gameInfo.running = false
       if (time === 0) {
         this.updateGameState()
         this.timer = 100
@@ -259,6 +277,7 @@ export default {
     },
 
     actionSetKeyword (type) {
+      console.log('actionSetKeyword type : ', type)
       if (type === 'reset') {
         this.socket.emit('reqKeyword', '')
       } else {
@@ -266,6 +285,7 @@ export default {
         const length = keywords.length
         const randVal = Math.floor(Math.random() * (length - 0 + 1)) + 0
         const keyword = keywords[randVal]
+        console.log('actionSetKeyword keyword : ', keyword)
         this.socket.emit('reqKeyword', keyword)
       }
     },
@@ -333,11 +353,38 @@ export default {
       try {
         const { data } = await apiGameInfo()
         data.body.running = false
-        await apiGameUpdate(data.body)
+        const { data: data2 } = await apiGameUpdate(data.body)
+        console.log('updateGameState apiGameUpdate data2 :', data2)
+        this.gameInfo = data2.body
+
         this.actionSetKeyword('reset')
         EventBus.$emit('start:alertDialog', {
           title: '',
           text: '종료 되었습니다.',
+          type: 1
+        })
+      } catch (error) {
+        this.$toast.error(error.message)
+      } finally {
+        this.loading.hide()
+      }
+    },
+
+    async actionsReceiveGameWin (data_) {
+      this.loading = this.$loading.show()
+      try {
+        this.gameInfo.running = false
+        if (this.player === 'palyer-1') {
+          const { data } = await apiGameInfo()
+          data.body.running = false
+          await apiGameUpdate(data.body)
+        }
+        this.actionSetKeyword('reset')
+        this.socket.emit('reqResetTimer')
+
+        EventBus.$emit('start:alertDialog', {
+          title: '',
+          text: `정답은 [${data_.text}] - [${data_.player}] 님이 맞추셨습니다.`,
           type: 1
         })
       } catch (error) {
@@ -354,9 +401,6 @@ export default {
         this.$toast.error(data.msg)
       } else {
         this.gameInfo = data.body
-        // if (this.player === 'player-1') {
-        //   this.actionSetKeyword()
-        // }
         this.loading.hide()
       }
       this.actionStoreClient()

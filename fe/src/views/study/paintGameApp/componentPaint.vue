@@ -17,6 +17,7 @@
           <v-card width="700px" class="elevation-12">
             <!-- id="paintContainer" -->
             <v-stage
+              v-if="player === 'player-1'"
               ref="paintContainer"
               :config="containerConfig"
               @mousedown="handleDrawStart"
@@ -28,19 +29,21 @@
               @touchmove="handleDrawWork">
                 <v-layer ref="paintLayer"></v-layer>
               </v-stage>
-            </v-card>
-            <div class="tools-bar">
-              <v-btn icon color="primary" :class="tool === 'brush' ? 'active' : ''" @click="actionSetTool('brush')">
-                <v-icon>mdi-pen</v-icon>
-              </v-btn>
-              <v-btn icon color="primary" :class="tool === 'eraser' ? 'active' : ''" @click="actionSetTool('eraser')">
-                <v-icon>mdi-eraser</v-icon>
-              </v-btn>
-              <div class="mb-15"></div>
-              <v-btn icon color="cyan" @click="actionClearLayer">
-                <v-icon>mdi-delete</v-icon>
-              </v-btn>
-            </div>
+            <v-stage
+              v-else
+              ref="paintContainer"
+              :config="containerConfig">
+                <v-layer ref="paintLayer"></v-layer>
+              </v-stage>
+          </v-card>
+          <div class="tools-bar">
+            <v-btn icon color="primary" :class="tool === 'brush' ? 'active' : ''" @click="actionSetTool('brush')">
+              <v-icon>mdi-pen</v-icon>
+            </v-btn>
+            <v-btn icon color="primary" :class="tool === 'eraser' ? 'active' : ''" @click="actionSetTool('eraser')">
+              <v-icon>mdi-eraser</v-icon>
+            </v-btn>
+          </div>
         </v-col>
       </v-row>
       <v-row>
@@ -95,7 +98,8 @@ export default {
   props: {
     player: String, //  player-1, player-2, player-3, player-4
     onSaveImgData: Function,
-    imgData: Array
+    imgData: Array,
+    running: Boolean
   },
 
   data () {
@@ -122,26 +126,27 @@ export default {
   watch: {
     imgData (newValue, oldValue) {
       if (this.player !== 'player-1') {
-        console.log('imgData watch 1 newValue : ', newValue)
-
+        // console.log('imgData watch 1 newValue : ', newValue)
         const copyValue = this.$_.cloneDeep(newValue)
-        console.log('imgData watch 2 copyValue : ', copyValue)
-
+        // console.log('imgData watch 2 copyValue : ', copyValue)
         if (copyValue.length > 0) {
           const index = copyValue.length
-          console.log('imgData watch 2 index : ', index)
+          // console.log('imgData watch 2 index : ', index)
           const lineObj = copyValue[index - 1]
           // const newLine = new Konva.Line(lineObj)
-          console.log('imgData watch 3 lineObj : ', lineObj)
-
+          // console.log('imgData watch 3 lineObj : ', lineObj)
           const newLine = new Konva.Line(lineObj)
           this.paintLayer.add(newLine)
-
-          console.log('imgData watch 4 newLine : ', newLine)
-
-          // this.paintLayer.add(newLine)
           this.paintLayer.batchDraw()
+          // console.log('imgData watch 4 newLine : ', newLine)
         }
+      }
+    },
+    running (newValue, oldValue) {
+      // console.log('running watch 1 newValue : ', newValue)
+      // console.log('running watch 1 oldValue : ', oldValue)
+      if (newValue === true && oldValue === false) {
+        this.actionClearLayer()
       }
     }
   },

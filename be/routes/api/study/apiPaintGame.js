@@ -36,7 +36,6 @@ class PaintChatGame {
       } catch (error) {
         res.send({ success: false, msg: error.message })
       }
-
     }));
 
     this.app.use('/api/study/paint-game', router.post('/update', (req, res, next) => {
@@ -85,6 +84,10 @@ class PaintChatGame {
         console.log('reqServerChat data : ', data)
         // await this.saveDataDb(data)
         this.ioPaintChatGame.emit('resServerChat', data);
+        if (data.text !== '' && this.keyword !== '' && data.text === this.keyword) {
+          console.log('game win')
+          this.ioPaintChatGame.emit('resGameWin', data);
+        }
       });
 
       socket.on('reqImgData', async (data) => {
@@ -124,18 +127,22 @@ class PaintChatGame {
           })
       });
 
-      socket.on('reqAllContents', async (data) => {
-        // console.log('this.contents length : ', this.contents.length)
-        // const oldContents = await this.getContents()
-        console.log('reqAllContents oldContents : ', oldContents);
-        this.ioPaintChatGame.emit('resAllContents', oldContents);
-      });
+      socket.on('reqResetTimer', async () => {
+        if (this.interval) {
+          clearInterval(this.interval)
+        }
+        this.ioPaintChatGame.emit('resResetTimer', 100);
+      })
 
       socket.on('reqTimer', async (data) => {
         console.log('reqTimer : ', data)
         const maxTime = data
         let time_ = data
         let result = 1
+
+        if (this.interval) {
+          clearInterval(this.interval)
+        }
 
         this.interval = setInterval(() => {
           result = (time_ / maxTime) * 100
