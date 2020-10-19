@@ -8,12 +8,15 @@
             <span v-if="gameInfo.running">진행중</span>
             <span v-else>입장가능</span>
             <v-btn icon @click="requestApi" class="ml-2 mb-1">
-              <v-icon left>mdi-reload</v-icon>
+              <v-icon>mdi-reload</v-icon>
             </v-btn>
           </div>
           <div v-if="gameInfo">
             <span>현재참가자 : </span>
             <span>[ {{gameInfo.users.toString()}} ]</span>
+            <v-btn text @click="actionForceRest" class="ml-2 mb-1">
+              <v-icon left>mdi-delete</v-icon>강제삭제
+            </v-btn>
           </div>
         </v-col>
       </v-row>
@@ -140,6 +143,20 @@ export default {
         localStorage.setItem('PAINT-GAME-PLAYER', player)
         this.$router.push('/study/paint-game-in')
       }
+    },
+
+    async actionForceRest () {
+      this.loading = this.$loading.show()
+      this.gameInfo.users = []
+      this.gameInfo.running = false
+      const { data } = await apiGameUpdate(this.gameInfo)
+      if (!data.success) {
+        this.$toast.error(data.msg)
+      } else {
+        this.$toast.success('다시한번 진행자로 입장하여 퇴장을 해주세요.')
+        this.gameInfo = data.body
+      }
+      this.loading.hide()
     },
 
     async requestApi () {

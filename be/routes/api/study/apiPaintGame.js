@@ -162,32 +162,7 @@ class PaintChatGame {
     this.contents.push(data)
   }
 
-  async saveDataDb(data) {
-    await Chat.create(data)
-      .then(r => {
-        // console.log('chat save success r:', r)
-        this.contents.push(data)
-      })
-      .catch(e => {
-        console.log('saveDataDb e:', e.message)
-      })
-  }
 
-  async getContents() {
-    let oldContents = this.contents
-    // return oldContents
-
-    await Chat.find()
-      .then(rs => {
-        // console.log('getContents rs : ', rs)
-        oldContents = rs
-      })
-      .catch(e => {
-        console.log('getContents e:', e.message)
-      })
-
-    return oldContents
-  }
 }
 
 module.exports = PaintChatGame;

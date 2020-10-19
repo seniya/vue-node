@@ -114,8 +114,8 @@ export default {
     return {
       socket: null,
       loading: null,
-      // maxTime: 60 * 5,
-      maxTime: 50,
+      maxTime: 60 * 5,
+      // maxTime: 50,
       timer: 100,
       interval: null,
       player: localStorage.getItem('PAINT-GAME-PLAYER'), //  player-1, player-2, player-3, player-4
@@ -172,6 +172,7 @@ export default {
 
     async initSocket () {
       const ioUrl = process.env.NODE_ENV !== 'production' ? 'http://localhost:3000/study/paint-game' : 'https://seniya2.iptime.org/study/paint-game'
+      // this.socket = io(ioUrl, { secure: true, transports: ['websocket'] })
       this.socket = io(ioUrl, { secure: true })
       this.socket.on('connect', () => {
         this.requestGameInfo()
