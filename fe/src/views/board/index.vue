@@ -9,7 +9,7 @@
       <v-btn icon @click="changeListType('list')">
         <v-icon>mdi-format-list-bulleted</v-icon>
       </v-btn>
-      <v-btn icon @click="moveToAdd" class="ml-3">
+      <v-btn v-if="$store.state.auth.user.lv === 0" icon @click="moveToAdd" class="ml-3">
         <v-icon>mdi-plus</v-icon>
       </v-btn>
     </v-toolbar>

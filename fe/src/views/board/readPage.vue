@@ -5,13 +5,13 @@
       <v-toolbar-title v-if="board">{{board.title}}</v-toolbar-title>
       <v-spacer></v-spacer>
       <v-btn icon @click="moveToList">
-        <v-icon >mdi-format-list-bulleted</v-icon>
+        <v-icon>mdi-format-list-bulleted</v-icon>
       </v-btn>
-      <v-btn icon class="ml-5" @click="moveToModify">
-        <v-icon >mdi-pencil</v-icon>
+      <v-btn v-if="$store.state.auth.user.lv === 0" icon class="ml-5" @click="moveToModify">
+        <v-icon>mdi-pencil</v-icon>
       </v-btn>
-      <v-btn icon @click="deleteConfirm">
-        <v-icon >mdi-trash-can</v-icon>
+      <v-btn v-if="$store.state.auth.user.lv === 0" icon @click="deleteConfirm">
+        <v-icon>mdi-trash-can</v-icon>
       </v-btn>
     </v-toolbar>
 
@@ -19,8 +19,7 @@
       <v-col cols="12">
         <v-card v-if="article">
           <v-card-title>{{ article.title }}</v-card-title>
-          <v-card-title>{{ article.subTitle }}</v-card-title>
-
+          <v-card-subtitle>{{ article.subTitle }}</v-card-subtitle>
           <v-card-text>
             <v-container>
               <v-row dense>
@@ -42,10 +41,10 @@
               <v-icon left>mdi-format-list-bulleted</v-icon> List
             </v-btn>
             <v-spacer></v-spacer>
-            <v-btn text color="primary" @click="moveToModify">
+            <v-btn v-if="$store.state.auth.user.lv === 0" text color="primary" @click="moveToModify">
               <v-icon left>mdi-pencil</v-icon> Edit
             </v-btn>
-            <v-btn text color="primary" @click="deleteConfirm">
+            <v-btn v-if="$store.state.auth.user.lv === 0" text color="primary" @click="deleteConfirm">
               <v-icon left>mdi-trash-can</v-icon> delete
             </v-btn>
           </v-card-actions>
@@ -182,6 +181,7 @@ export default {
     }
     .ce-block__content {
       // min-width: 600px !important;
+      margin: auto;
       max-width: 650px !important;
     }
     .ce-toolbar__content {
