@@ -29,18 +29,19 @@ app.use(cookieParser());
 const server = http.createServer(app);
 
 /*** Socket.IO 추가 : simple-chat 전용 ***/
+const io = require('socket.io')(server, { origins: '*:*' });
 const SimpleChat = require('./routes/api/study/apiSimpleChat');
-const simpleChat = new SimpleChat(server);
+const simpleChat = new SimpleChat(io);
 simpleChat.registerOn();
 
 /*** Socket.IO 추가 : normal-chat 전용 ***/
 const NormalChat = require('./routes/api/study/apiNormalChat');
-const normalChat = new NormalChat(app, server);
+const normalChat = new NormalChat(app, io);
 normalChat.registerOn();
 
 /*** Socket.IO 추가 : paint-game 전용 ***/
 const PaintChatGame = require('./routes/api/study/apiPaintGame');
-const paintChatGame = new PaintChatGame(app, server);
+const paintChatGame = new PaintChatGame(app, io);
 paintChatGame.registerOn();
 
 

@@ -5,12 +5,12 @@ const router = express.Router();
 
 class NormalChat {
 
-  constructor(app, server) {
+  constructor(app, io) {
     this.app = app
-    this.server = server;
+    // this.server = server;
     this.clients = []
     this.contents = []
-    this.io = require('socket.io')(server, { origins: '*:*' });
+    this.io = io;
     this.ioNormalChat = this.io.of('/study/normal-chat');
     // console.log('constructor clients : ', this.clients);
   }
@@ -34,7 +34,7 @@ class NormalChat {
 
     this.ioNormalChat.on('connection', socket => {
 
-      console.log('connection : ', socket.id)
+      console.log('ioNormalChat connection : ', socket.id)
 
       socket.on('reqStoreClient', data => {
 

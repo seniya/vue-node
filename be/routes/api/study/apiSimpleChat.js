@@ -1,16 +1,19 @@
 class SimpleChat {
-  constructor(server) {
-    this.server = server;
+
+  constructor(io) {
+    // this.server = server;
     this.clients = []
-    this.io = require('socket.io')(server, { origins: '*:*' });
+    // this.io = require('socket.io')(server, { origins: '*:*' });
+    this.io = io;
     this.ioSimpleChat = this.io.of('/study/simple-chat');
   }
 
   registerOn() {
 
     this.ioSimpleChat.on('connection', socket => {
-
+      console.log('ioSimpleChat connection');
       socket.on('reqStoreClient', data => {
+
         const clientInfo = new Object();
         clientInfo.name = data.name;
         clientInfo.login = Date.now();

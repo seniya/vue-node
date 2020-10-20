@@ -31,7 +31,7 @@ const signToken = (_id, id, lv, name, exp) => {
     const o = {
       issuer: cfg.jwt.issuer,
       subject: cfg.jwt.subject,
-      expiresIn: cfg.jwt.expiresIn, // 3분
+      expiresIn: cfg.jwt.expiresIn, // 시간
       algorithm: cfg.jwt.algorithm,
       expiresIn: exp
     }

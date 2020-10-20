@@ -5,14 +5,15 @@ const router = express.Router();
 
 class PaintChatGame {
 
-  constructor(app, server) {
+  constructor(app, io) {
     this.app = app
-    this.server = server
+    // this.server = server
     this.keyword = ''
     this.clients = []
     this.contents = []
     this.imgData = []
-    this.io = require('socket.io')(server, { origins: '*:*' })
+    this.io = io
+    // this.io = require('socket.io')(server, { origins: '*:*' })
     this.ioPaintChatGame = this.io.of('/study/paint-game')
     this.interval = null
     // console.log('constructor clients : ', this.clients);
