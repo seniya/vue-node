@@ -7,6 +7,11 @@ import {
 
 const state = {
   token: localStorage.getItem('token'),
+  user: {
+    id: '',
+    lv: 3,
+    name: ''
+  },
   siteInfo: {
     copyright: '',
     dark: '',
@@ -24,6 +29,9 @@ const getters = {
   },
   getListType: state => {
     return state.listType
+  },
+  getUser: state => {
+    return state.user
   }
 }
 
@@ -36,6 +44,9 @@ const mutations = {
   },
   setListType (state, listType) {
     state.listType = listType
+  },
+  setUser (state, user) {
+    state.user = user
   }
 }
 
@@ -47,6 +58,7 @@ const actions = {
   async SITE_INFO (context) {
     const { data } = await apiSiteInfo()
     context.commit('setSiteInfo', data.body)
+    context.commit('setUser', data.user)
     return data.body
   },
   async SIGN_UP (context, payload) {

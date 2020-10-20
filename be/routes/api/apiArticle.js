@@ -32,8 +32,8 @@ router.get('/list/:_board', (req, res, next) => {
 
   if (req.params._board) f._board = req.params._board
 
-  console.log('req.params._board : ', req.params._board)
-  console.log('f : ', f)
+  // console.log('req.params._board : ', req.params._board)
+  // console.log('f : ', f)
 
   Article.countDocuments(f)
     .then(r => {
@@ -98,7 +98,7 @@ router.post('/:_board', (req, res, next) => {
         category,
         subTitle,
         tags,
-        ip: '1.1.1.1', //req.ip
+        ip: '1.1.1.1', // 무의미..
         createDate: new Date().getTime(),
         updateDate: new Date().getTime(),
         _board,

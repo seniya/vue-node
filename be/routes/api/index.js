@@ -5,15 +5,6 @@ const moment = require('moment')
 const jwt = require('jsonwebtoken');
 const cfg = require('../../../config')
 
-router.use('/siteInfo', require('./apiSite.js'))
-router.use('/board', require('./apiBoard.js'))
-router.use('/sign', require('./apiSign.js'))
-router.use('/download', require('./apiDownload.js'))
-router.use('/demo', require('./apiDemo.js'))
-
-router.use('/study', require('./study/apiSimplePaint'))
-
-
 const verifyToken = (t) => {
   return new Promise((resolve, reject) => {
     if (!t) resolve({ id: 'guest', name: '손님', lv: 3 })
@@ -35,7 +26,7 @@ const signToken = (_id, id, lv, name, exp) => {
       algorithm: cfg.jwt.algorithm,
       expiresIn: exp
     }
-    jwt.sign({ _id, id, lv, name }, cfg.jwt.secretKey, o, (err, token) => { // _id add    
+    jwt.sign({ _id, id, lv, name }, cfg.jwt.secretKey, o, (err, token) => {
       if (err) reject(err)
       resolve(token)
     })
@@ -51,14 +42,13 @@ const getToken = async (t) => {
   const expSec = (vt.exp - vt.iat)
   if (diff > expSec / cfg.jwt.expiresInDiv) return { user: vt, token: null }
 
-  const nt = await signToken(vt._id, vt.id, vt.lv, vt.name, expSec) // _id added
+  const nt = await signToken(vt._id, vt.id, vt.lv, vt.name, expSec)
   vt = await verifyToken(nt)
   return { user: vt, token: nt }
 }
 
 router.all('*', function (req, res, next) {
-  // 토큰 검사
-  getToken(req.headers.authorization)
+  getToken(req.headers.authorization) // 토큰 검사
     .then((v) => {
       // console.log(v)
       req.user = v.user
@@ -67,7 +57,23 @@ router.all('*', function (req, res, next) {
     })
     // .catch(e => res.send({ success: false, msg: e.message }))
     .catch(e => next(createError(401, e.message)))
+  // .catch(e => {
+  //   req.user = {
+  //     id: 'guest',        
+  //     name: '손님',
+  //     lv: 0,
+  //   }
+  //   req.token = null
+  //   next()
+  // })
 })
+
+router.use('/siteInfo', require('./apiSite.js'))
+router.use('/board', require('./apiBoard.js'))
+router.use('/sign', require('./apiSign.js'))
+router.use('/download', require('./apiDownload.js'))
+router.use('/demo', require('./apiDemo.js'))
+router.use('/study', require('./study/apiSimplePaint'))
 
 router.use('/pageAuth', require('./apiPage.js'))
 router.use('/article', require('./apiArticle.js'))

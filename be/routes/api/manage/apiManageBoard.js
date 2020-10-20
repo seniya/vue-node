@@ -4,8 +4,18 @@ const router = express.Router();
 const Board = require('../../../models/boards')
 
 router.post('/', (req, res, next) => {
-  const { name, lv, rmk } = req.body
-  Board.create({ name, lv, rmk })
+  const { name, title, type, readLv, createLv, categories, tags } = req.body
+  const board_ = {
+    name,
+    title,
+    type,
+    readLv,
+    createLv,
+    createDate: new Date().getTime(),
+    updateDate: new Date().getTime()
+  }
+
+  Board.create(board_)
     .then(r => {
       res.send({ success: true, msg: r, token: req.token })
     })

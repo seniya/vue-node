@@ -20,20 +20,16 @@
             <v-layout wrap>
               <v-flex xs12 sm6 md4>
                 <v-text-field
-                  label="게시판 이름"
-                  hint="당구모임"
-                  persistent-hint
+                  label="게시판 코드"
                   required
                   v-model="form.name"
                 ></v-text-field>
               </v-flex>
               <v-flex xs12 sm6>
                 <v-text-field
-                  label="게시판 설명"
-                  hint="당구를 좋아하는 사람"
-                  persistent-hint
+                  label="게시판 이름"
                   required
-                  v-model="form.rmk"
+                  v-model="form.title"
                 ></v-text-field>
               </v-flex>
               <v-flex xs12 sm6>
@@ -79,7 +75,7 @@ export default {
       lvs: [0, 1, 2, 3],
       form: {
         name: '',
-        rmk: '',
+        title: '',
         readLv: 0,
         createLv: 0
       },
@@ -94,7 +90,7 @@ export default {
       this.dialog = true
       this.form = {
         name: '',
-        rmk: '',
+        title: '',
         readLv: 0,
         createLv: 0
       }

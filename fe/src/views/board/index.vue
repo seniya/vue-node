@@ -1,7 +1,7 @@
 <template>
   <v-container >
     <v-toolbar dense class="elevation-3">
-      <v-toolbar-title v-if="board">{{board.name}}</v-toolbar-title>
+      <v-toolbar-title v-if="board">{{board.title}}</v-toolbar-title>
       <v-spacer></v-spacer>
       <v-btn icon @click="changeListType('card')">
         <v-icon>mdi-card-bulleted</v-icon>

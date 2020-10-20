@@ -42,7 +42,7 @@
             Hello
           </v-list-item-title>
           <v-list-item-subtitle>
-            World
+            {{$store.state.auth.user.name}}
           </v-list-item-subtitle>
         </v-list-item-content>
         <v-list-item-action>
@@ -110,13 +110,11 @@ export default {
       confirmObj: {}
     }
   },
-  mounted () {
-    this.getSite()
-  },
   created () {
     EventBus.$on('start:alertDialog', alertObj => {
       this.showConfirmAlert(alertObj)
     })
+    this.getSite()
   },
   beforeDestroy () {
     EventBus.$off('start:alertDialog')

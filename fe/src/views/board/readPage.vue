@@ -2,7 +2,7 @@
   <v-container>
 
     <v-toolbar dense class="elevation-3">
-      <v-toolbar-title v-if="boardName">{{boardName}}</v-toolbar-title>
+      <v-toolbar-title v-if="board">{{board.title}}</v-toolbar-title>
       <v-spacer></v-spacer>
       <v-btn icon @click="moveToList">
         <v-icon >mdi-format-list-bulleted</v-icon>
@@ -90,10 +90,12 @@ export default {
       boardName: this.$route.params.name,
       articleId: this.$route.params.articleid,
       article: null,
-      editor: null
+      editor: null,
+      board: null
     }
   },
   mounted () {
+    this.readBoard()
     this.readArticle(this.articleId)
   },
   methods: {
@@ -119,6 +121,17 @@ export default {
           const editableElements = document.querySelectorAll('[contenteditable=true]')
           editableElements.forEach(el => el.removeAttribute('contenteditable'))
         }, 0)
+      } catch (error) {
+        this.$toast.error(error.message)
+      }
+    },
+    async readBoard () {
+      try {
+        const data = await this.$store.dispatch('board/BOARD_INFO', { id: this.boardName })
+        if (!data.success) {
+          throw new Error(data.msg)
+        }
+        this.board = data.body
       } catch (error) {
         this.$toast.error(error.message)
       }

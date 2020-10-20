@@ -8,13 +8,13 @@
       <v-card-text>
         <div>읽기 권한: {{board.readLv}}</div>
         <div>쓰기 권한: {{board.createLv}}</div>
-        <div>설명: {{board.rmk}}</div>
+        <div>설명: {{board.title}}</div>
       </v-card-text>
 
       <v-divider light></v-divider>
       <v-card-actions>
         <v-btn outlined color="primary" @click="modeChange(board)">수정</v-btn>
-        <v-btn outlined color="error" @click="ca=true">삭제</v-btn>
+        <!-- <v-btn outlined color="error" @click="ca=true">삭제</v-btn> -->
       </v-card-actions>
     </template>
     <template v-else>
@@ -24,26 +24,28 @@
       <v-card-text>
         <v-form>
         <v-text-field
-          label="게시판 이름"
-          :hint="form.name ? '' : '야구모임'"
-          persistent-hint
+          label="게시판 코드"
           required
           v-model="form.name"
         ></v-text-field>
 
         <v-text-field
-          label="게시판 설명"
-          :hint="form.rmk ? '' : '야구를 좋아하는 사람'"
-          persistent-hint
+          label="게시판 이름"
           required
-          v-model="form.rmk"
+          v-model="form.title"
         ></v-text-field>
 
         <v-select
           :items="lvs"
-          label="권한"
+          label="읽기 권한"
           required
-          v-model="form.lv"
+          v-model="form.readLv"
+        ></v-select>
+        <v-select
+          :items="lvs"
+          label="쓰기 권한"
+          required
+          v-model="form.createLv"
         ></v-select>
       </v-form>
 
@@ -79,8 +81,9 @@ export default {
       lvs: [0, 1, 2, 3],
       form: {
         name: '',
-        lv: 0,
-        rmk: ''
+        readLv: 0,
+        createLv: 0,
+        title: ''
       },
       edit: false
     }
@@ -90,12 +93,13 @@ export default {
       this.edit = true
       this.form = {
         name: b.name,
-        lv: b.lv,
-        rmk: b.rmk
+        title: b.title,
+        readLv: b.readLv,
+        createLv: b.createLv
       }
     },
     async update (board) {
-      if (board.name === this.form.name && board.rmk === this.form.rmk && board.lv === this.form.lv) {
+      if (board.name === this.form.name && board.title === this.form.title && board.lv === this.form.lv) {
         return this.$store.commit('pop', { msg: '변경한 것이 없습니다.', color: 'warning' })
       }
       try {
