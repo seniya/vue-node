@@ -173,7 +173,7 @@ export default {
     async initSocket () {
       const ioUrl = process.env.NODE_ENV !== 'production' ? 'http://localhost:3000/study/paint-game' : 'https://seniya2.iptime.org/study/paint-game'
       this.socket = io(ioUrl, { secure: true })
-      this.socket = io(ioUrl, { secure: true, transports: ['websocket'] })
+      // this.socket = io(ioUrl, { secure: true, transports: ['websocket'] })
       this.socket.on('connect', () => {
         this.requestGameInfo()
         this.$toast.success('접속 되었습니다.')

@@ -244,8 +244,8 @@ export default {
 
     async initSocket () {
       const ioUrl = process.env.NODE_ENV !== 'production' ? 'http://localhost:3000/study/normal-chat' : 'https://seniya2.iptime.org/study/normal-chat'
-      // this.socket = io(ioUrl, { secure: true })
-      this.socket = io(ioUrl, { secure: true, transports: ['websocket'] })
+      this.socket = io(ioUrl, { secure: true })
+      // this.socket = io(ioUrl, { secure: true, transports: ['websocket'] })
       this.socket.on('connect', () => {
         this.prepareContentsStep1()
         this.$toast.success('접속 되었습니다.')
