@@ -96,7 +96,8 @@ export default {
       }
     },
     async add () {
-      if (!this.form.name) return this.pop('이름을 작성해주세요', 'warning')
+      if (!this.form.name) return this.$toast.error('코드를 작성해주세요')
+      if (!this.form.title) return this.$toast.error('설명을 작성해주세요')
       try {
         await this.$store.dispatch('manage/BOARD_ADD', this.form)
         this.dialog = false

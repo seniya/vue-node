@@ -99,16 +99,14 @@ export default {
       }
     },
     async update (board) {
-      if (board.name === this.form.name && board.title === this.form.title && board.lv === this.form.lv) {
-        return this.$store.commit('pop', { msg: '변경한 것이 없습니다.', color: 'warning' })
-      }
       try {
         const data = await this.$store.dispatch('manage/BOARD_UPDATE', { id: board._id, data: this.form })
         if (!data.success) throw new Error(data.msg)
+        this.$toast.success('수정하였습니다.')
         this.$emit('list')
         this.edit = false
       } catch (error) {
-        this.$store.commit('pop', { msg: error.message, color: 'error' })
+        this.$toast.error(error.message)
       }
     },
     remove (board) {
@@ -116,7 +114,7 @@ export default {
         this.$store.dispatch('manage/BOARD_REMOVE', { id: board._id })
         this.$emit('list')
       } catch (error) {
-        this.$store.commit('pop', { msg: error.message, color: 'error' })
+        this.$toast.error(error.message)
       }
     }
   }

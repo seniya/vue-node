@@ -1,8 +1,9 @@
 const SITE_MENU = [
   {
     icon: 'mdi-bulletin-board',
-    title: '게시판',
+    title: '블로그',
     act: true,
+    lv: 3,
     subItems: [
       {
         title: '33 Javascript',
@@ -17,7 +18,7 @@ const SITE_MENU = [
   {
     icon: 'mdi-seat-individual-suite',
     title: '게으름',
-    act: true,
+    lv: 3,
     subItems: [
       {
         title: '심플 쳇팅',
@@ -41,6 +42,7 @@ const SITE_MENU = [
     icon: 'mdi-pen',
     title: '페이지테스트',
     act: true,
+    lv: 0,
     subItems: [
       {
         title: 'anyone',
@@ -79,6 +81,7 @@ const SITE_MENU = [
   {
     icon: 'mdi-cogs',
     title: '관리메뉴',
+    lv: 0,
     subItems: [
       {
         title: '사용자관리',

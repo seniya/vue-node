@@ -60,25 +60,28 @@
         :key="item.title"
         v-model="item.active"
         :prepend-icon="item.icon"
-        no-action
-        >
+        no-action>
+
           <template v-slot:activator>
             <v-list-item-content>
               <v-list-item-title v-text="item.title"></v-list-item-title>
             </v-list-item-content>
           </template>
 
-          <v-list-item
-            v-for="child in item.subItems"
-            :key="child.title"
-            :to="child.to"
-            :prepend-icon="child.icon"
-            link
-          >
-            <v-list-item-content >
-              <v-list-item-title v-text="child.title"></v-list-item-title>
-            </v-list-item-content>
-          </v-list-item>
+          <template v-if="item.lv >= $store.state.auth.user.lv">
+            <v-list-item
+              v-for="child in item.subItems"
+              :key="child.title"
+              :to="child.to"
+              :prepend-icon="child.icon"
+              link
+            >
+              <v-list-item-content >
+                <v-list-item-title v-text="child.title"></v-list-item-title>
+              </v-list-item-content>
+            </v-list-item>
+          </template>
+
         </v-list-group>
       </v-list>
     </v-navigation-drawer>

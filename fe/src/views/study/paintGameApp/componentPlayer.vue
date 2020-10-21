@@ -92,7 +92,7 @@ export default {
       this.onStartTimer()
     },
     actionSendMessage () {
-      console.log('actionSendMessage : ', this.message)
+      // console.log('actionSendMessage : ', this.message)
       this.onSendMessage(this.message)
       this.message = ''
     }
@@ -150,7 +150,7 @@ export default {
 
       // const returnValue = this.$_.filter(sampleContents, { player: this.player })
       const returnValue = this.$_.filter(this.contents, { player: this.player })
-      console.log('returnValue : ', returnValue)
+      // console.log('returnValue : ', returnValue)
 
       return returnValue
       // return this.contents
@@ -160,7 +160,7 @@ export default {
   watch: {
     contentsFilterd () {
       const elements = document.getElementsByClassName('scrolled-content')
-      console.log('contentsFilterd elements : ', elements)
+      // console.log('contentsFilterd elements : ', elements)
       for (const element of elements) {
         element.scrollTop = element.scrollHeight
       }

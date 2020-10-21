@@ -8,7 +8,7 @@ router.get('/read/:name', (req, res, next) => {
   Board.findOne({ name })
     .then(r => {
       // 권한으로 못보게 하려면..
-      if (r.readLv < req.lv) return res.send({ success: false, msg: `${name} 게시판을 볼 수 있는 자격이 없습니다.` })
+      if (r.readLv < req.user.lv) return res.send({ success: false, msg: `${name} 게시판을 볼 수 있는 자격이 없습니다.` })
       res.send({ success: true, body: r, token: req.token })
     })
     .catch(e => {
