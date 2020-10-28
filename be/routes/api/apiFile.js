@@ -77,7 +77,7 @@ router.post('/upload', multer({
 router.post('/attache', multer({
   dest: dest,
   limits: {
-    fileSize: 200 * 1000 * 1000
+    fileSize: 2000 * 1000 * 1000
   }
 }).single('file'), (req, res, next) => {
   console.log(req.body)
