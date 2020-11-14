@@ -35,6 +35,10 @@ const SITE_MENU = [
       {
         title: '그림 맞추기-입장',
         to: { path: '/study/paint-game-ready' }
+      },
+      {
+        title: '양이간다',
+        to: { path: '/study/sheep-main' }
       }
     ]
   },
