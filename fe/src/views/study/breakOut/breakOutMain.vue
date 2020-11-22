@@ -1,9 +1,7 @@
 <template>
-  <!-- <div class="d-flex"></div> -->
-    <div class="d-flex justify-center mt-5">
-      <canvas ref="canvas" width="550" height="450"></canvas>
-    </div>
-
+  <div class="d-flex justify-center mt-5">
+    <canvas ref="canvas" width="550" height="450"></canvas>
+  </div>
 </template>
 
 <script>
@@ -89,7 +87,7 @@ export default {
       this.brickHeight = 20
 
       this.score = 0
-      this.lives = 3
+      this.lives = 5
 
       this.ball = new Ball(this.ballRadius)
       this.paddle = new Paddle(this.canvas, this.paddleWidth, this.paddleHeight)
