@@ -39,6 +39,10 @@ const SITE_MENU = [
       {
         title: '양이간다',
         to: { path: '/study/sheep-main' }
+      },
+      {
+        title: '블록격팡',
+        to: { path: '/study/break-out' }
       }
     ]
   },

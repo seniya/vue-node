@@ -35,6 +35,11 @@ const children = [
     path: '/study/sheep-main',
     name: 'sheepMain',
     component: () => import('@/views/study/sheep/sheepMain.vue')
+  },
+  {
+    path: '/study/break-out',
+    name: 'breakOut',
+    component: () => import('@/views/study/breakOut/breakOutMain.vue')
   }
 ]
 
