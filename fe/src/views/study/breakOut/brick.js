@@ -6,7 +6,7 @@ export class Brick {
     this.brickHeight = brickHeight
     this.brickPadding = 10
     this.brickOffsetTop = 30
-    this.brickOffsetLeft = 30
+    this.brickOffsetLeft = 20
 
     this.bricks = []
     for (let i = 0; i < this.brickColumnCount; i++) {

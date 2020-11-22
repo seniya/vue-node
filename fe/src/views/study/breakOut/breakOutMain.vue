@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="d-flex justify-center mt-5">
-      <canvas ref="canvas" width="550" height="450"></canvas>
+      <canvas ref="canvas" ></canvas>
     </div>
     <div class="d-flex justify-center mt-5">
       <p>
@@ -68,7 +68,7 @@ export default {
       this.ctx = this.canvas.getContext('2d')
       console.log('mounted this.canvas : ', this.canvas)
 
-      this.stageWidth = 470
+      this.stageWidth = 380
       this.stageHeight = 400
       this.canvas.width = this.stageWidth
       this.canvas.height = this.stageHeight
@@ -92,7 +92,7 @@ export default {
 
       this.brickRowCount = 3
       this.brickColumnCount = 5
-      this.brickWidth = 75
+      this.brickWidth = 60
       this.brickHeight = 20
 
       this.score = 0
